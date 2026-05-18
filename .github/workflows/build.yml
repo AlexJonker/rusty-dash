@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev
+          sudo apt-get install -y libasound2-dev libfontconfig1-dev
 
       - name: Get version
         id: get_version
@@ -99,7 +99,7 @@ jobs:
           #!/bin/bash -e
           apt-get update
           apt-get install -y --no-install-recommends \
-              xserver-xorg xinit x11-xserver-utils libxkbcommon-x11-0 openbox \
+              libfontconfig1 xserver-xorg xinit x11-xserver-utils libxkbcommon-x11-0 openbox \
               xserver-xorg-input-evdev xserver-xorg-input-libinput
 
           chown root:root /usr/local/bin/dash
