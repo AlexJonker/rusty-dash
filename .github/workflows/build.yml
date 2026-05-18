@@ -20,10 +20,10 @@ jobs:
         with:
           ref: "main"
 
-      - name: Install dependencies
+      - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler
+          sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev
 
       - name: Get version
         id: get_version
@@ -98,17 +98,18 @@ jobs:
           cat > custom-stage/01-customization/00-run-chroot.sh <<-'EOF'
           #!/bin/bash -e
           apt-get update
-          apt-get install -y --no-install-recommends \
-              libfontconfig1 xserver-xorg xinit x11-xserver-utils libxkbcommon-x11-0 openbox \
-              xserver-xorg-input-evdev xserver-xorg-input-libinput
+          apt-get install -y --no-install-recommends libfontconfig1 libgbm1 libxkbcommon0 libudev1 libseat1 libinput10
 
           chown root:root /usr/local/bin/dash
           chmod 755 /usr/local/bin/dash
           echo "root:root" | chpasswd
+          usermod -aG video,input,render driver
 
           mkdir -p /storage/music
           chown -R driver:driver /storage
           chown -R driver:driver /home/driver
+
+          systemctl enable dash.service
           EOF
 
           cat > custom-stage/prerun.sh <<-'EOF'

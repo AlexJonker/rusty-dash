@@ -1,0 +1,14 @@
+[Unit]
+Description=Car Dashboard
+After=local-fs.target systemd-udev-settle.service
+Wants=systemd-udev-settle.service
+
+[Service]
+User=driver
+Environment=SLINT_BACKEND=linuxkms-software
+ExecStart=/usr/local/bin/dash
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
