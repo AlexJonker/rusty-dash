@@ -1,0 +1,145 @@
+import { AppWindow } from "../base.slint";
+
+export component PlayerWindow inherits AppWindow {
+    in-out property <bool> is-playing: false;
+    in-out property <bool> is-loop-enabled: false;
+    in-out property <bool> is-shuffle-enabled: false;
+
+    in-out property <string> track-title: "Title";
+    in-out property <string> artist-name: "Artist";
+    in-out property <string> album-name: "Album";
+
+    callback play-pause();
+    callback next-track();
+    callback previous-track();
+    callback toggle-loop();
+    callback toggle-shuffle();
+
+    VerticalLayout {
+        padding-top: 48px;
+        padding-bottom: 48px;
+        padding-left: 32px;
+        padding-right: 32px;
+        spacing: 32px;
+        alignment: center;
+
+        HorizontalLayout {
+            alignment: center;
+            Rectangle {
+                width: 280px;
+                height: 280px;
+                background: #1e1e2e;
+                border-radius: 16px;
+
+                VerticalLayout {
+                    alignment: center;
+                    HorizontalLayout {
+                        alignment: center;
+                        Image {
+                            source: @image-url("../../assets/icons/music.svg");
+                            width: 100px;
+                            height: 100px;
+                        }
+                    }
+                }
+            }
+        }
+
+        VerticalLayout {
+            spacing: 8px;
+
+            Text {
+                text: root.track-title;
+                font-size: 24px;
+                font-weight: 700;
+                color: #ffffff;
+                horizontal-alignment: center;
+                overflow: elide;
+            }
+            Text {
+                text: root.artist-name;
+                font-size: 16px;
+                color: #b0b0b0;
+                horizontal-alignment: center;
+                overflow: elide;
+            }
+            Text {
+                text: root.album-name;
+                font-size: 14px;
+                color: #707070;
+                horizontal-alignment: center;
+                overflow: elide;
+            }
+        }
+
+        HorizontalLayout {
+            spacing: 32px;
+            alignment: center;
+
+            TouchArea {
+                clicked => { root.previous-track(); }
+                Image {
+                    source: @image-url("../../assets/icons/previous.svg");
+                    width: 36px;
+                    height: 36px;
+                }
+            }
+
+            TouchArea {
+                clicked => { root.play-pause(); }
+                Rectangle {
+                    width: 64px;
+                    height: 64px;
+                    border-radius: 32px;
+                    background: #1db954;
+
+                    VerticalLayout {
+                        alignment: center;
+                        HorizontalLayout {
+                            alignment: center;
+                            Image {
+                                source: root.is-playing ? @image-url("../../assets/icons/pause.svg") : @image-url("../../assets/icons/play.svg");
+                                width: 28px;
+                                height: 28px;
+                            }
+                        }
+                    }
+                }
+            }
+
+            TouchArea {
+                clicked => { root.next-track(); }
+                Image {
+                    source: @image-url("../../assets/icons/next.svg");
+                    width: 36px;
+                    height: 36px;
+                }
+            }
+        }
+
+        HorizontalLayout {
+            spacing: 48px;
+            alignment: center;
+
+            TouchArea {
+                clicked => { root.toggle-loop(); }
+                Image {
+                    source: root.is-loop-enabled ? @image-url("../../assets/icons/loop_enabled.svg") : @image-url("../../assets/icons/loop_disabled.svg");
+                    width: 28px;
+                    height: 28px;
+                    opacity: root.is-loop-enabled ? 1.0 : 0.4;
+                }
+            }
+
+            TouchArea {
+                clicked => { root.toggle-shuffle(); }
+                Image {
+                    source: root.is-shuffle-enabled ? @image-url("../../assets/icons/shuffle_enabled.svg") : @image-url("../../assets/icons/shuffle_disabled.svg");
+                    width: 28px;
+                    height: 28px;
+                    opacity: root.is-shuffle-enabled ? 1.0 : 0.4;
+                }
+            }
+        }
+    }
+}

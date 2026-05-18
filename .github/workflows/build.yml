@@ -18,8 +18,7 @@ jobs:
       - name: Checkout dash
         uses: actions/checkout@v6
         with:
-          repository: alexjonker/dash
-          path: dash
+          ref: "main"
 
       - name: Install dependencies
         run: |
