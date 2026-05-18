@@ -4,7 +4,7 @@ version = "0.0.2"
 edition = "2024"
 
 [dependencies]
-slint = "1.16.1"
+slint = { version = "1.16.1", features = ["backend-linuxkms"]}
 # android-auto = {version = "0.3.7", features = ["usb","wireless"] }
 android-auto = {version = "0.3.8", features = ["usb"] }
 
