@@ -55,7 +55,7 @@ jobs:
 
       - uses: actions/download-artifact@v7
         with:
-          name: dash-binary
+          name: rusty-dash-binary
 
       - name: Release dash binary
         uses: softprops/action-gh-release@v3
@@ -78,7 +78,7 @@ jobs:
       - name: Download binary
         uses: actions/download-artifact@v7
         with:
-          name: dash-binary
+          name: rusty-dash-binary
 
       - name: Decompress binary
         run: xz -d rusty-dash-arm64.xz
