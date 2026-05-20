@@ -17,8 +17,7 @@ sudo apt-get install -y --no-install-recommends \
 echo "[2/3] Downloading binary..."
 
 wget https://github.com/AlexJonker/rusty-dash/releases/latest/download/rusty-dash-amd64.xz
-tar -xf rusty-dash-amd64.xz
-rm rusty-dash-amd64.xz
+xz -d rusty-dash-amd64.xz
 
 echo "[3/3] Installing binary and files..."
 sudo mv rusty-dash-amd64 /usr/local/bin/rusty-dash
@@ -26,7 +25,7 @@ sudo chown root:root /usr/local/bin/rusty-dash
 sudo chmod 755 /usr/local/bin/rusty-dash
 
 sudo mkdir -p /storage/music
-sudo cp -r src/storage/ /storage/
+sudo cp -r src/storage/* /storage/
 sudo chmod -R 777 /storage
 
 sudo cp src/etc/systemd/system/startup.service /etc/systemd/system/
