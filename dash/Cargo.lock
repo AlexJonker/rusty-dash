@@ -1081,15 +1081,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f27ae1dd37df86211c42e150270f82743308803d90a6f6e6651cd730d5e1732f"
 
 [[package]]
-name = "dash"
-version = "0.0.4"
-dependencies = [
- "android-auto",
- "slint",
- "slint-build",
-]
-
-[[package]]
 name = "data-url"
 version = "0.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4266,6 +4257,15 @@ name = "rustversion"
 version = "1.0.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
+
+[[package]]
+name = "rusty-dash"
+version = "0.0.4"
+dependencies = [
+ "android-auto",
+ "slint",
+ "slint-build",
+]
 
 [[package]]
 name = "rustybuzz"

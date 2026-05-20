@@ -1,5 +1,5 @@
 [package]
-name = "dash"
+name = "rusty-dash"
 version = "0.0.4"
 edition = "2024"
 

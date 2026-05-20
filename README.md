@@ -1,7 +1,7 @@
 <p align="center">
   <!-- <img src="./assets/icon.png" alt="logo" width="150" /> -->
   <br>
-  <strong>Miata Dash</strong>
+  <strong>Rusty Dash</strong>
   <br><br>
   A full linux based headunit system for in my miata.
   <br>

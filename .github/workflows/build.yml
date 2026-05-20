@@ -35,13 +35,13 @@ jobs:
           cargo build --release
 
       - name: Compress binary
-        run: xz -c dash/target/release/dash > dash-arm64.xz
+        run: xz -c dash/target/release/rusty-dash > rusty-dash-arm64.xz
 
       - name: Upload binary
         uses: actions/upload-artifact@v7
         with:
-          name: dash-binary
-          path: dash-arm64.xz
+          name: rusty-dash-binary
+          path: rusty-dash-arm64.xz
 
   release-binary:
     name: Release Binary
@@ -64,7 +64,7 @@ jobs:
           name: ${{ format('v{0}', needs.compile.outputs.version) }}
           generate_release_notes: true
           files: |
-            dash-arm64.xz
+            rusty-dash-arm64.xz
 
   build:
     name: Build RPi Image
@@ -81,14 +81,14 @@ jobs:
           name: dash-binary
 
       - name: Decompress binary
-        run: xz -d dash-arm64.xz
+        run: xz -d rusty-dash-arm64.xz
 
       - name: Create custom stage
         run: |
           mkdir -p custom-stage/01-customization/files/usr/local/bin
 
           cp -r ./src/. custom-stage/01-customization/files/
-          cp dash-arm64 custom-stage/01-customization/files/usr/local/bin/dash
+          cp rusty-dash-arm64 custom-stage/01-customization/files/usr/local/bin/rusty-dash
 
           cat > custom-stage/01-customization/00-run.sh <<-'EOF'
           #!/bin/bash -e
@@ -100,8 +100,8 @@ jobs:
           apt-get update
           apt-get install -y --no-install-recommends libfontconfig1 libgbm1 libxkbcommon0 libudev1 libseat1 libinput10
 
-          chown root:root /usr/local/bin/dash
-          chmod 755 /usr/local/bin/dash
+          chown root:root /usr/local/bin/rusty-dash
+          chmod 755 /usr/local/bin/rusty-dash
           echo "root:root" | chpasswd
           usermod -aG video,input,render driver
 
@@ -138,8 +138,8 @@ jobs:
           extra-host-dependencies: ""
           extra-host-modules: ""
           github-token: ${{ github.token }}
-          hostname: miata
-          image-name: "miata-dash-${{ needs.compile.outputs.version }}-arm64"
+          hostname: shitbox
+          image-name: "rusty-dash-${{ needs.compile.outputs.version }}-arm64"
           increase-runner-disk-size: true
           keyboard-keymap: us
           keyboard-layout: English (US)
@@ -164,7 +164,7 @@ jobs:
 
       - uses: actions/upload-artifact@v7
         with:
-          name: miata-image
+          name: rusty-dash-image
           path: ${{ steps.build.outputs.image-path }}
 
   release-image:
@@ -179,7 +179,7 @@ jobs:
 
       - uses: actions/download-artifact@v8
         with:
-          name: miata-image
+          name: rusty-dash-image
 
       - name: Release arm64 image
         uses: softprops/action-gh-release@v3
