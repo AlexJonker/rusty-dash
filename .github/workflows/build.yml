@@ -152,6 +152,7 @@ jobs:
           chmod -R 777 /storage
 
           systemctl enable startup.service
+          systemctl disable getty@tty1.service
           EOF
 
           cat > custom-stage/prerun.sh <<-'EOF'
