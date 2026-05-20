@@ -25,7 +25,7 @@ jobs:
         run: echo "version=$(grep '^version' dash/Cargo.toml | head -1 | sed 's/version = "\(.*\)"/\1/')" >> $GITHUB_OUTPUT
 
   compile-arm64:
-    name: Compile Dashboard
+    name: Compile Dashboard arm64
     runs-on: ubuntu-24.04-arm
 
     steps:
@@ -50,11 +50,11 @@ jobs:
       - name: Upload binary
         uses: actions/upload-artifact@v7
         with:
-          name: rusty-dash-binary
+          name: rusty-dash-binary-arm64
           path: rusty-dash-arm64.xz
 
   compile-amd64:
-    name: Compile Dashboard
+    name: Compile Dashboard amd64
     runs-on: ubuntu-latest
 
     steps:
@@ -79,13 +79,13 @@ jobs:
       - name: Upload binary
         uses: actions/upload-artifact@v7
         with:
-          name: rusty-dash-binary
+          name: rusty-dash-binary-amd64
           path: rusty-dash-amd64.xz
 
 
   release-binary:
-    name: Release Binary
-    needs: [compile-arm64, compile-amd64]
+    name: Release Binaries
+    needs: [get-version, compile-arm64, compile-amd64]
     runs-on: ubuntu-latest
 
     steps:
@@ -95,21 +95,25 @@ jobs:
 
       - uses: actions/download-artifact@v7
         with:
-          name: rusty-dash-binary
+          name: rusty-dash-binary-arm64
+
+      - uses: actions/download-artifact@v7
+        with:
+          name: rusty-dash-binary-amd64
 
       - name: Release dash binary
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ format('v{0}', needs.get_version.outputs.version) }}
-          name: ${{ format('v{0}', needs.get_version.outputs.version) }}
+          tag_name: ${{ format('v{0}', needs.get-version.outputs.version) }}
+          name: ${{ format('v{0}', needs.get-version.outputs.version) }}
           generate_release_notes: true
           files: |
             rusty-dash-arm64.xz
             rusty-dash-amd64.xz
-  build:
+  build-pi-image:
     name: Build RPi Image
     runs-on: ubuntu-latest
-    needs: [compile-arm64]
+    needs: [get-version, compile-arm64]
 
     steps:
       - name: Checkout repository
@@ -118,7 +122,7 @@ jobs:
       - name: Download binary
         uses: actions/download-artifact@v7
         with:
-          name: rusty-dash-binary
+          name: rusty-dash-binary-arm64
 
       - name: Decompress binary
         run: xz -d rusty-dash-arm64.xz
@@ -177,7 +181,7 @@ jobs:
           extra-host-modules: ""
           github-token: ${{ github.token }}
           hostname: shitbox
-          image-name: "rusty-dash-${{ needs.get_version.outputs.version }}-arm64"
+          image-name: "rusty-dash-${{ needs.get-version.outputs.version }}-arm64"
           increase-runner-disk-size: true
           keyboard-keymap: us
           keyboard-layout: English (US)
@@ -207,7 +211,7 @@ jobs:
 
   release-image:
     name: Release RPi Image
-    needs: [compile-arm64, build]
+    needs: [get-version, build-pi-image]
     runs-on: ubuntu-latest
 
     steps:
@@ -222,8 +226,8 @@ jobs:
       - name: Release arm64 image
         uses: softprops/action-gh-release@v3
         with:
-          tag_name: ${{ format('v{0}', needs.get_version.outputs.version) }}
-          name: ${{ format('v{0}', needs.get_version.outputs.version) }}
+          tag_name: ${{ format('v{0}', needs.get-version.outputs.version) }}
+          name: ${{ format('v{0}', needs.get-version.outputs.version) }}
           overwrite_files: true
           files: |
             image*.img.xz
