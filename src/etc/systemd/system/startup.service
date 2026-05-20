@@ -4,8 +4,7 @@ After=local-fs.target systemd-udev-settle.service
 Wants=systemd-udev-settle.service
 
 [Service]
-User=driver
-ExecStart=/storage/boot.sh
+ExecStart=/bin/bash /storage/boot.sh
 Restart=on-failure
 RestartSec=3
 
