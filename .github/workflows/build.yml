@@ -191,7 +191,7 @@ jobs:
           pi-gen-dir: pi-gen
           pi-gen-release: Raspberry Pi reference
           pi-gen-repository: RPi-Distro/pi-gen
-          pi-gen-version: 2026-04-13-raspios-trixie-arm64
+          pi-gen-version: arm64
           pubkey-only-ssh: 0
           pubkey-ssh-first-user: ""
           release: trixie
