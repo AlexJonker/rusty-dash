@@ -44,6 +44,8 @@ export component AppWindow inherits Window {
     callback toggle-loop();
     callback toggle-shuffle();
 
+    callback quit();
+
     VerticalLayout {
         padding-top: 4px;
         padding-bottom: 4px;
@@ -121,6 +123,9 @@ export component AppWindow inherits Window {
                 y: 0px;
                 width: parent.width;
                 height: parent.height;
+                quit => {
+                    root.quit();
+                }
             }
         }
     }

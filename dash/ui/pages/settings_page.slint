@@ -1,22 +1,36 @@
+import { Button, VerticalBox } from "std-widgets.slint";
+
 export component SettingsPage inherits VerticalLayout {
+    callback quit();
+
     alignment: center;
 
-    VerticalLayout {
-        spacing: 8px;
+    HorizontalLayout {
+        alignment: center;
 
-        Text {
-            text: "Settings";
-            font-size: 24px;
-            font-weight: 700;
-            color: #ffffff;
-            horizontal-alignment: center;
-        }
+        VerticalLayout {
+            spacing: 8px;
+            width: 400px;
 
-        Text {
-            text: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.";
-            font-size: 16px;
-            color: #b0b0b0;
-            horizontal-alignment: center;
+            Text {
+                text: "Settings";
+                font-size: 24px;
+                font-weight: 700;
+                color: #ffffff;
+            }
+
+            Text {
+                text: "Hello, World!";
+                font-size: 16px;
+                color: #b0b0b0;
+            }
+
+            Button {
+                text: "Quit";
+                clicked => {
+                    quit();
+                }
+            }
         }
     }
 }
