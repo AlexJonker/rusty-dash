@@ -2,9 +2,9 @@
     in-out property text <=> txt.text;
     in-out property font-size <=> txt.font-size;
     in-out property text-color <=> txt.color;
-    in-out property <color> background-color: red;
-    in-out property <color> background-color-pressed: blue;
-    in-out property <color> background-color-hover: green;
+    in-out property <color> background-color: #c20000;
+    in-out property <color> background-color-pressed: #e10000;
+    in-out property <color> background-color-hover: #980202;
     callback clicked <=> touch.clicked;
 
     border-radius: 6px;
@@ -14,4 +14,9 @@
     txt := Text { }
 
     touch := TouchArea { }
+}
+
+export component Divider inherits Rectangle {
+    height: 1px;
+    background: #80808050;
 }
