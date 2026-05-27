@@ -20,6 +20,8 @@ export component AppWindow inherits Window {
     in-out property <string> artist-name: "Artist";
     in-out property <string> album-name: "Album";
 
+    in-out property <image> android-auto-frame;
+
     callback play-pause();
     callback next-track();
     callback previous-track();
@@ -108,7 +110,9 @@ export component AppWindow inherits Window {
                 }
             }
 
-            if root.current-page == 2: AndroidAutoPage { }
+            if root.current-page == 2: AndroidAutoPage {
+                android-auto-frame: root.android-auto-frame;
+            }
 
             if root.current-page == 3: SettingsPage {
                 shutdown => {

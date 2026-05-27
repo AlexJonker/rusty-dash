@@ -3,8 +3,15 @@ use system_shutdown::shutdown;
 
 slint::include_modules!();
 
+mod android_auto;
+
 fn main() -> Result<(), Box<dyn Error>> {
+    simple_logger::SimpleLogger::new()
+        .with_level(log::LevelFilter::Info)
+        .init()
+        .ok();
     let ui = AppWindow::new()?;
+    let _android_auto: android_auto::AndroidAutoHandle = android_auto::AndroidAutoHandle::start(&ui);
 
     use slint::ComponentHandle;
 

@@ -5,9 +5,19 @@ edition = "2024"
 
 [dependencies]
 slint = { version = "1.16.1", features = ["backend-linuxkms"] }
-# android-auto = {version = "0.3.7", features = ["usb","wireless"] }
 android-auto = { version = "0.3.8", features = ["usb"] }
 system_shutdown = "4.1.0"
+ringbuf = "0.5.0"
+tokio = "1.52.3"
+cpal = "0.17.3"
+openh264 = "0.9.3"
+log = "0.4.30"
+simple_logger = "5.2.0"
+async-trait = "0.1.89"
 
 [build-dependencies]
 slint-build = "1.16.1"
+
+# This patch is needed for the v1 certificate in android-auto's src/cert.rs
+[patch.crates-io]
+rustls-webpki = { git = "https://github.com/uglyoldbob/webpki", branch = "main5" }

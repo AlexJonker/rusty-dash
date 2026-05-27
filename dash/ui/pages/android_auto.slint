@@ -1,28 +1,11 @@
-import { Divider } from "../custom-components.slint";
-export component AndroidAutoPage inherits VerticalLayout {
-    alignment: center;
+export component AndroidAutoPage inherits Rectangle {
+    in-out property <image> android-auto-frame;
 
-    HorizontalLayout {
-        alignment: center;
+    background: #000000;
 
-        VerticalLayout {
-            spacing: 8px;
-            width: 400px;
-
-            Text {
-                text: "Android Auto";
-                font-size: 24px;
-                font-weight: 700;
-                color: #ffffff;
-            }
-
-            Divider { }
-
-            Text {
-                text: "Hello, World!";
-                font-size: 16px;
-                color: #b0b0b0;
-            }
-        }
+    Image {
+        source: root.android-auto-frame;
+        width: parent.width;
+        height: parent.height;
     }
 }
