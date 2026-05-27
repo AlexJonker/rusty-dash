@@ -1,5 +1,5 @@
 import { VerticalBox } from "std-widgets.slint";
-import { Button, Divider } from "../custom-components.slint";
+import { Button, HorizontalDivider } from "../custom-components.slint";
 
 export component SettingsPage inherits VerticalLayout {
     callback shutdown();
@@ -20,7 +20,7 @@ export component SettingsPage inherits VerticalLayout {
                 color: #ffffff;
             }
 
-            Divider { }
+            HorizontalDivider { }
 
             Text {
                 text: "Hello, World!";

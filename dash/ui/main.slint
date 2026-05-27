@@ -2,7 +2,7 @@ import { HomePage } from "./pages/home.slint";
 import { MusicPage } from "./pages/music.slint";
 import { AndroidAutoPage } from "./pages/android_auto.slint";
 import { SettingsPage } from "./pages/settings.slint";
-import { Button, ImageButton } from "./custom-components.slint";
+import { Button, ImageButton, HorizontalDivider, VerticalDivider } from "./custom-components.slint";
 
 export component AppWindow inherits Window {
     title: "Rusty Dash";
@@ -42,6 +42,8 @@ export component AppWindow inherits Window {
                 }
             }
 
+            HorizontalDivider { }
+
             ImageButton {
                 image: @image-url("../assets/icons/music.svg");
                 image-width: 80px;
@@ -53,6 +55,8 @@ export component AppWindow inherits Window {
                     root.current-page = 1;
                 }
             }
+
+            HorizontalDivider { }
 
             ImageButton {
                 image: @image-url("../assets/icons/android_auto.svg");
@@ -66,6 +70,8 @@ export component AppWindow inherits Window {
                 }
             }
 
+            HorizontalDivider { }
+
             ImageButton {
                 image: @image-url("../assets/icons/settings.svg");
                 image-width: 80px;
@@ -78,6 +84,8 @@ export component AppWindow inherits Window {
                 }
             }
         }
+
+        VerticalDivider { }
 
         Rectangle {
             if root.current-page == 0: HomePage { }
