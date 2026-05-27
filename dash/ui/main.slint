@@ -2,7 +2,37 @@ import { HomePage } from "./pages/home.slint";
 import { MusicPage } from "./pages/music.slint";
 import { AndroidAutoPage } from "./pages/android_auto.slint";
 import { SettingsPage } from "./pages/settings.slint";
-import { Button, ImageButton, HorizontalDivider, VerticalDivider } from "./custom-components.slint";
+import { Button, ImageButton, HorizontalDivider, VerticalDivider, } from "./custom-components.slint";
+
+component SidebarItem inherits Rectangle {
+    in-out property <image> image;
+    in-out property <bool> active;
+    callback clicked;
+
+    width: 100px;
+    height: 80px;
+
+    background: active ? @linear-gradient(90deg, #e5393522 0%, #12121200 100%) : transparent;
+
+    Rectangle {
+        x: 0;
+        width: 4px;
+        height: 50%;
+        y: (parent.height - self.height) / 2;
+        background: active ? #e53935 : transparent;
+        border-radius: 2px;
+    }
+
+    ImageButton {
+        image: root.image;
+        image-width: 42px;
+        image-height: 42px;
+        image-color: active ? #e53935 : #888888;
+        clicked => {
+            root.clicked();
+        }
+    }
+}
 
 export component AppWindow inherits Window {
     title: "Rusty Dash";
@@ -30,55 +60,39 @@ export component AppWindow inherits Window {
 
     HorizontalLayout {
         VerticalLayout {
-            ImageButton {
+            width: 100px;
+            alignment: center;
+            spacing: 16px;
+            padding-top: 16px;
+            padding-bottom: 24px;
+
+            SidebarItem {
                 image: @image-url("../assets/icons/home.svg");
-                image-width: 80px;
-                image-height: 80px;
-                image-color: root.current-page == 0 ? #c20000 : #ffffff;
-                width: 100px;
-                // height: 100px;
+                active: root.current-page == 0;
                 clicked => {
                     root.current-page = 0;
                 }
             }
 
-            HorizontalDivider { }
-
-            ImageButton {
+            SidebarItem {
                 image: @image-url("../assets/icons/music.svg");
-                image-width: 80px;
-                image-height: 80px;
-                image-color: root.current-page == 1 ? #c20000 : #ffffff;
-                width: 100px;
-                // height: 100px;
+                active: root.current-page == 1;
                 clicked => {
                     root.current-page = 1;
                 }
             }
 
-            HorizontalDivider { }
-
-            ImageButton {
+            SidebarItem {
                 image: @image-url("../assets/icons/android_auto.svg");
-                image-width: 80px;
-                image-height: 80px;
-                image-color: root.current-page == 2 ? #c20000 : #ffffff;
-                width: 100px;
-                // height: 100px;
+                active: root.current-page == 2;
                 clicked => {
                     root.current-page = 2;
                 }
             }
 
-            HorizontalDivider { }
-
-            ImageButton {
+            SidebarItem {
                 image: @image-url("../assets/icons/settings.svg");
-                image-width: 80px;
-                image-height: 80px;
-                image-color: root.current-page == 3 ? #c20000 : #ffffff;
-                width: 100px;
-                // height: 100px;
+                active: root.current-page == 3;
                 clicked => {
                     root.current-page = 3;
                 }
