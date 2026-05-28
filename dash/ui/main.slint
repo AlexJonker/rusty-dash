@@ -40,12 +40,6 @@ component SidebarItem inherits Rectangle {
 }
 
 export component AppWindow inherits Window {
-    title: "Rusty Dash";
-    width: 800px;
-    height: 480px;
-
-    background: #121212;
-
     in-out property <int> current-page: 0;
 
     in-out property <bool> is-playing: false;
@@ -66,6 +60,13 @@ export component AppWindow inherits Window {
 
     callback shutdown();
     callback reboot();
+
+    title: "Rusty Dash";
+    // width: 800px;
+    // height: 480px;
+    full-screen: true;
+
+    background: #121212;
 
     HorizontalLayout {
         VerticalLayout {
