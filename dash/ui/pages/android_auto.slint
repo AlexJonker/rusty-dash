@@ -3,11 +3,13 @@ export component AndroidAutoPage inherits Rectangle {
     callback handle_touch(int, int, int);
     private property <bool> pressed: false;
 
+    background: #000000;
+
     VerticalLayout {
         alignment: center;
 
         Text {
-            text: "Please plug in your phone";
+            text: "Plug in your phone to get started";
             font-size: 24px;
             font-weight: 700;
             horizontal-alignment: center;
@@ -16,27 +18,38 @@ export component AndroidAutoPage inherits Rectangle {
     }
 
     TouchArea {
+        property <bool> wc: self.width / self.height <= 800phx / 480phx;
+        property <length> img-w: self.wc ? self.width : self.height * 800phx / 480phx;
+        property <length> img-h: self.wc ? self.width * 480phx / 800phx : self.height;
+        property <length> ox: (self.width - self.img-w) / 2;
+        property <length> oy: (self.height - self.img-h) / 2;
+
         pointer-event(details) => {
-            if (details.kind == PointerEventKind.down) {
-                root.pressed = true;
-                root.handle_touch(
-                    (self.mouse-x / 1px) * 800 / max(1, self.width / 1px),
-                    (self.mouse-y / 1px) * 480 / max(1, self.height / 1px),
-                    5);
-            } else if (details.kind == PointerEventKind.move) {
-                if (root.pressed) {
+            let rx = self.mouse-x - self.ox;
+            let ry = self.mouse-y - self.oy;
+
+            if rx >= 0phx && rx < self.img-w && ry >= 0phx && ry < self.img-h {
+                if (details.kind == PointerEventKind.down) {
+                    root.pressed = true;
                     root.handle_touch(
-                        (self.mouse-x / 1px) * 800 / max(1, self.width / 1px),
-                        (self.mouse-y / 1px) * 480 / max(1, self.height / 1px),
-                        2);
+                        (rx / 1px) * 800 / max(1, self.img-w / 1px),
+                        (ry / 1px) * 480 / max(1, self.img-h / 1px),
+                        5);
+                } else if (details.kind == PointerEventKind.move) {
+                    if (root.pressed) {
+                        root.handle_touch(
+                            (rx / 1px) * 800 / max(1, self.img-w / 1px),
+                            (ry / 1px) * 480 / max(1, self.img-h / 1px),
+                            2);
+                    }
+                } else if (details.kind == PointerEventKind.up) {
+                    root.pressed = false;
+                    root.handle_touch(
+                        (rx / 1px) * 800 / max(1, self.img-w / 1px),
+                        (ry / 1px) * 480 / max(1, self.img-h / 1px),
+                        6);
                 }
-            } else if (details.kind == PointerEventKind.up) {
-                root.pressed = false;
-                root.handle_touch(
-                    (self.mouse-x / 1px) * 800 / max(1, self.width / 1px),
-                    (self.mouse-y / 1px) * 480 / max(1, self.height / 1px),
-                    6);
-            } else if (details.kind == PointerEventKind.cancel) {
+            } else if (details.kind == PointerEventKind.up || details.kind == PointerEventKind.cancel) {
                 root.pressed = false;
             }
         }
@@ -44,6 +57,7 @@ export component AndroidAutoPage inherits Rectangle {
             source: root.android-auto-frame;
             width: parent.width;
             height: parent.height;
+            image-fit: contain;
         }
     }
 }
