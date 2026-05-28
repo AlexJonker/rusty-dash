@@ -3,6 +3,7 @@ import { Button, HorizontalDivider } from "../custom-components.slint";
 
 export component SettingsPage inherits VerticalLayout {
     callback shutdown();
+    callback reboot();
 
     alignment: center;
 
@@ -34,6 +35,15 @@ export component SettingsPage inherits VerticalLayout {
                 font-size: 16px;
                 clicked => {
                     shutdown();
+                }
+            }
+
+            Button {
+                text: "Reboot";
+                height: 40px;
+                font-size: 16px;
+                clicked => {
+                    reboot();
                 }
             }
         }

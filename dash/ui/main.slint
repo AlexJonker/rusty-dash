@@ -64,6 +64,7 @@ export component AppWindow inherits Window {
     callback toggle-shuffle();
 
     callback shutdown();
+    callback reboot();
 
     HorizontalLayout {
         VerticalLayout {
@@ -144,6 +145,9 @@ export component AppWindow inherits Window {
             if root.current-page == 3: SettingsPage {
                 shutdown => {
                     root.shutdown();
+                }
+                reboot => {
+                    root.reboot();
                 }
             }
         }

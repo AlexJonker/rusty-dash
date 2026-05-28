@@ -378,7 +378,9 @@ impl AndroidAuto {
         let relay = self.inner.lock().await.relay.take();
         let result = Box::new(self).run(config, &mut joinset, &setup).await;
         joinset.join_all().await;
-        if let Some(r) = relay { r.abort() }
+        if let Some(r) = relay {
+            r.abort()
+        }
         result
     }
 }

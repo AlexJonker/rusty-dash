@@ -1,6 +1,6 @@
 use slint::ComponentHandle;
 use std::error::Error;
-use system_shutdown::shutdown;
+use system_shutdown::{reboot, shutdown};
 
 slint::include_modules!();
 
@@ -36,6 +36,11 @@ fn main() -> Result<(), Box<dyn Error>> {
     ui.on_shutdown(move || match shutdown() {
         Ok(()) => println!("Shutting down, bye!"),
         Err(error) => eprintln!("Failed to shut down: {error}"),
+    });
+
+    ui.on_reboot(move || match reboot() {
+        Ok(()) => println!("Rebooting, see you soon!"),
+        Err(error) => eprintln!("Failed to reboot: {error}"),
     });
 
     ui.run()?;
