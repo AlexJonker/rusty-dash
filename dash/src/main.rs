@@ -1,3 +1,4 @@
+use slint::ComponentHandle;
 use std::error::Error;
 use system_shutdown::shutdown;
 
@@ -13,8 +14,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     let ui = AppWindow::new()?;
     let _android_auto: android_auto::AndroidAutoHandle =
         android_auto::AndroidAutoHandle::start(&ui);
-
-    use slint::ComponentHandle;
 
     let ui_handle = ui.as_weak();
     ui.on_play_pause(move || {
@@ -35,8 +34,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     });
 
     ui.on_shutdown(move || match shutdown() {
-        Ok(_) => println!("Shutting down, bye!"),
-        Err(error) => eprintln!("Failed to shut down: {}", error),
+        Ok(()) => println!("Shutting down, bye!"),
+        Err(error) => eprintln!("Failed to shut down: {error}"),
     });
 
     ui.run()?;

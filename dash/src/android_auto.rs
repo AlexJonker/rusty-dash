@@ -204,13 +204,15 @@ impl android_auto::AndroidAutoAudioInputTrait for AndroidAuto {
                     let timestamp = std::time::SystemTime::now()
                         .duration_since(std::time::UNIX_EPOCH)
                         .unwrap()
-                        .as_micros() as u64;
+                        .as_micros()
+                        .try_into()
+                        .unwrap_or(u64::MAX);
                     let msg = android_auto::AndroidAutoMessage::Audio(Some(timestamp), bytes);
                     if let Err(e) = android_send.try_send(msg.sendable()) {
-                        log::warn!("Dropped audio input frame: {:?}", e);
+                        log::warn!("Dropped audio input frame: {e:?}");
                     }
                 },
-                |err| log::error!("Audio input error: {:?}", err),
+                |err| log::error!("Audio input error: {err:?}"),
                 None,
             ) {
                 let _ = str.play();
@@ -277,16 +279,13 @@ fn try_build_output_stream(
     channels: u16,
     ring_size: usize,
 ) -> Option<(AudioProducer, cpal::Stream)> {
-    let cfg = configs
-        .iter()
-        .find(|c| {
-            c.channels() == channels
-                && c.sample_format() == cpal::SampleFormat::I16
-                && c.min_sample_rate() <= rate
-                && c.max_sample_rate() >= rate
-        })?
-        .clone()
-        .try_with_sample_rate(rate)?;
+    let cfg = (*configs.iter().find(|c| {
+        c.channels() == channels
+            && c.sample_format() == cpal::SampleFormat::I16
+            && c.min_sample_rate() <= rate
+            && c.max_sample_rate() >= rate
+    })?)
+    .try_with_sample_rate(rate)?;
 
     let rb = ringbuf::HeapRb::new(ring_size);
     let (producer, mut consumer) = ringbuf::traits::Split::split(rb);
@@ -303,7 +302,7 @@ fn try_build_output_stream(
                     index += c;
                 }
             },
-            |err| log::error!("Error in audio output: {:?}", err),
+            |err| log::error!("Error in audio output: {err:?}"),
             None,
         )
         .ok()?;
@@ -323,15 +322,10 @@ impl AndroidAuto {
 
         let android_send2 = android_send.clone();
         let relay = tokio::spawn(async move {
-            loop {
-                match recv.recv().await {
-                    Some(MessageToAsync::AndroidAutoMessage(msg)) => {
-                        if let Err(e) = android_send2.send(msg).await {
-                            log::error!("Error relaying info {e:?}");
-                            break;
-                        }
-                    }
-                    None => break,
+            while let Some(MessageToAsync::AndroidAutoMessage(msg)) = recv.recv().await {
+                if let Err(e) = android_send2.send(msg).await {
+                    log::error!("Error relaying info {e:?}");
+                    break;
                 }
             }
         });
@@ -384,7 +378,7 @@ impl AndroidAuto {
         let relay = self.inner.lock().await.relay.take();
         let result = Box::new(self).run(config, &mut joinset, &setup).await;
         joinset.join_all().await;
-        relay.map(|r| r.abort());
+        if let Some(r) = relay { r.abort() }
         result
     }
 }
@@ -454,7 +448,7 @@ impl AndroidAutoContainer {
 impl Drop for AndroidAutoContainer {
     fn drop(&mut self) {
         let _ = self.kill.take().map(|s| s.send(()));
-        self.thread.take().map(|t| t.join());
+        self.thread.take().map(std::thread::JoinHandle::join);
     }
 }
 
@@ -524,7 +518,7 @@ fn update_frame_from_video(
     let units: Vec<&[u8]> = openh264::nal_units(data).collect();
     for p in &units {
         match decoder.decode(p) {
-            Err(e) => log::error!("Failed to decode android auto video {:?}", e),
+            Err(e) => log::error!("Failed to decode android auto video {e:?}"),
             Ok(None) => {}
             Ok(Some(image)) => {
                 let mut rgb_raw = vec![0; image.rgb8_len()];
