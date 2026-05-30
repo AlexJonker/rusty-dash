@@ -5,38 +5,42 @@ export component MusicPage inherits VerticalLayout {
     in-out property <string> track-title;
     in-out property <string> artist-name;
     in-out property <string> album-name;
+    in-out property <float> progress;
+    in-out property <string> current-time;
+    in-out property <string> total-time;
 
     callback play-pause();
     callback next-track();
     callback previous-track();
     callback toggle-loop();
     callback toggle-shuffle();
+    callback set-progress(float);
 
-    spacing: 32px;
+    spacing: 16px;
     alignment: center;
 
     HorizontalLayout {
         alignment: center;
         Rectangle {
-            width: 280px;
-            height: 280px;
+            width: 160px;
+            height: 160px;
             background: #1e1e2e;
-            border-radius: 16px;
+            border-radius: 12px;
 
             Image {
                 source: @image-url("../../assets/icons/music.svg");
-                width: 100px;
-                height: 100px;
+                width: 72px;
+                height: 72px;
             }
         }
     }
 
     VerticalLayout {
-        spacing: 8px;
+        spacing: 6px;
 
         Text {
             text: root.track-title;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: #ffffff;
             horizontal-alignment: center;
@@ -44,21 +48,69 @@ export component MusicPage inherits VerticalLayout {
 
         Text {
             text: root.artist-name;
-            font-size: 16px;
+            font-size: 14px;
             color: #b0b0b0;
             horizontal-alignment: center;
         }
 
         Text {
             text: root.album-name;
-            font-size: 14px;
+            font-size: 12px;
             color: #707070;
             horizontal-alignment: center;
         }
     }
 
     HorizontalLayout {
-        spacing: 32px;
+        spacing: 8px;
+        alignment: center;
+
+        Text {
+            text: root.current-time;
+            font-size: 11px;
+            color: #b0b0b0;
+            min-width: 32px;
+            horizontal-alignment: center;
+        }
+
+        Rectangle {
+            width: 220px;
+
+            Rectangle {
+                width: 100%;
+                height: 8px;
+                background: #404040;
+                border-radius: 4px;
+                clip: true;
+
+                Rectangle {
+                    x: 0px;
+                    width: parent.width * root.progress;
+                    background: #c20000;
+                    border-radius: 4px;
+                }
+            }
+
+            TouchArea {
+                width: 100%;
+                height: 300%; // Make it easier to click
+                clicked => {
+                    root.set-progress(self.mouse-x / self.width);
+                }
+            }
+        }
+
+        Text {
+            text: root.total-time;
+            font-size: 11px;
+            color: #b0b0b0;
+            min-width: 32px;
+            horizontal-alignment: center;
+        }
+    }
+
+    HorizontalLayout {
+        spacing: 36px;
         alignment: center;
 
         TouchArea {
@@ -67,8 +119,8 @@ export component MusicPage inherits VerticalLayout {
             }
             Image {
                 source: @image-url("../../assets/icons/previous.svg");
-                width: 36px;
-                height: 36px;
+                width: 32px;
+                height: 32px;
             }
         }
 
@@ -76,18 +128,18 @@ export component MusicPage inherits VerticalLayout {
             clicked => {
                 root.play-pause();
             }
-            width: 64px;
-            height: 64px;
+            width: 52px;
+            height: 52px;
             Rectangle {
-                width: 64px;
-                height: 64px;
-                border-radius: 32px;
+                width: 52px;
+                height: 52px;
+                border-radius: 26px;
                 background: #c20000;
 
                 Image {
                     source: root.is-playing ? @image-url("../../assets/icons/pause.svg") : @image-url("../../assets/icons/play.svg");
-                    width: 28px;
-                    height: 28px;
+                    width: 22px;
+                    height: 22px;
                 }
             }
         }
@@ -98,8 +150,8 @@ export component MusicPage inherits VerticalLayout {
             }
             Image {
                 source: @image-url("../../assets/icons/next.svg");
-                width: 36px;
-                height: 36px;
+                width: 32px;
+                height: 32px;
             }
         }
     }
@@ -114,8 +166,8 @@ export component MusicPage inherits VerticalLayout {
             }
             Image {
                 source: root.is-loop-enabled ? @image-url("../../assets/icons/loop_enabled.svg") : @image-url("../../assets/icons/loop_disabled.svg");
-                width: 28px;
-                height: 28px;
+                width: 22px;
+                height: 22px;
                 opacity: root.is-loop-enabled ? 1.0 : 0.4;
             }
         }
@@ -126,8 +178,8 @@ export component MusicPage inherits VerticalLayout {
             }
             Image {
                 source: root.is-shuffle-enabled ? @image-url("../../assets/icons/shuffle_enabled.svg") : @image-url("../../assets/icons/shuffle_disabled.svg");
-                width: 28px;
-                height: 28px;
+                width: 22px;
+                height: 22px;
                 opacity: root.is-shuffle-enabled ? 1.0 : 0.4;
             }
         }

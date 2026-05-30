@@ -50,6 +50,10 @@ export component AppWindow inherits Window {
     in-out property <string> artist-name: "Artist";
     in-out property <string> album-name: "Album";
 
+    in-out property <float> progress: 0.0;
+    in-out property <string> current-time: "0:00";
+    in-out property <string> total-time: "0:00";
+
     in-out property <image> android-auto-frame;
 
     callback play-pause();
@@ -57,6 +61,7 @@ export component AppWindow inherits Window {
     callback previous-track();
     callback toggle-loop();
     callback toggle-shuffle();
+    callback set-progress(float);
 
     callback shutdown();
     callback reboot();
@@ -125,6 +130,10 @@ export component AppWindow inherits Window {
                 artist-name: root.artist-name;
                 album-name: root.album-name;
 
+                progress: root.progress;
+                current-time: root.current-time;
+                total-time: root.total-time;
+
                 play-pause => {
                     root.play-pause();
                 }
@@ -139,6 +148,9 @@ export component AppWindow inherits Window {
                 }
                 toggle-shuffle => {
                     root.toggle-shuffle();
+                }
+                set-progress(progress) => {
+                    root.set-progress(progress);
                 }
             }
 

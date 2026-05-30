@@ -34,6 +34,12 @@ impl MusicController {
             let _ui = ui_handle.unwrap();
         });
 
+        let ui_handle = ui.as_weak();
+        ui.on_set_progress(move |progress| {
+            let ui = ui_handle.unwrap();
+            ui.set_progress(progress);
+        });
+
         Self
     }
 }
