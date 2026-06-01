@@ -5,7 +5,7 @@ edition = "2024"
 
 [dependencies]
 slint = { git = "https://github.com/slint-ui/slint", features = ["backend-linuxkms"] }
-android-auto = { version = "0.3.8", features = ["usb"] }
+android-auto = { version = "*", features = ["usb"] }
 system_shutdown = "*"
 ringbuf = "*"
 tokio = { version = "*", features = ["full"] }
