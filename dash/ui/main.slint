@@ -1,4 +1,3 @@
-import { HomePage } from "./pages/home.slint";
 import { MusicPage } from "./pages/music.slint";
 import { AndroidAutoPage } from "./pages/android_auto.slint";
 import { SettingsPage } from "./pages/settings.slint";
@@ -86,7 +85,7 @@ export component AppWindow inherits Window {
             padding-bottom: 24px;
 
             SidebarItem {
-                image: @image-url("../assets/icons/home.svg");
+                image: @image-url("../assets/icons/music.svg");
                 active: root.current-page == 0;
                 clicked => {
                     root.current-page = 0;
@@ -94,7 +93,7 @@ export component AppWindow inherits Window {
             }
 
             SidebarItem {
-                image: @image-url("../assets/icons/music.svg");
+                image: @image-url("../assets/icons/android_auto.svg");
                 active: root.current-page == 1;
                 clicked => {
                     root.current-page = 1;
@@ -102,18 +101,10 @@ export component AppWindow inherits Window {
             }
 
             SidebarItem {
-                image: @image-url("../assets/icons/android_auto.svg");
+                image: @image-url("../assets/icons/settings.svg");
                 active: root.current-page == 2;
                 clicked => {
                     root.current-page = 2;
-                }
-            }
-
-            SidebarItem {
-                image: @image-url("../assets/icons/settings.svg");
-                active: root.current-page == 3;
-                clicked => {
-                    root.current-page = 3;
                 }
             }
         }
@@ -121,9 +112,7 @@ export component AppWindow inherits Window {
         VerticalDivider { }
 
         Rectangle {
-            if root.current-page == 0: HomePage { }
-
-            if root.current-page == 1: MusicPage {
+            if root.current-page == 0: MusicPage {
                 is-playing: root.is-playing;
                 is-loop-enabled: root.is-loop-enabled;
                 is-shuffle-enabled: root.is-shuffle-enabled;
@@ -156,14 +145,14 @@ export component AppWindow inherits Window {
                 }
             }
 
-            if root.current-page == 2: AndroidAutoPage {
+            if root.current-page == 1: AndroidAutoPage {
                 android-auto-frame: root.android-auto-frame;
                 handle_touch(x, y, action) => {
                     root.handle_android_auto_touch(x, y, action);
                 }
             }
 
-            if root.current-page == 3: SettingsPage {
+            if root.current-page == 2: SettingsPage {
                 app-version: root.app-version;
                 shutdown => {
                     root.shutdown();
