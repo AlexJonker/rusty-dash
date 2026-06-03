@@ -81,6 +81,16 @@ export component MusicPage inherits VerticalLayout {
                     }
 
                     Rectangle {
+                        TouchArea {
+                            height: 500%; // Make it easier to click
+                            moved => {
+                                root.set-progress(self.mouse-x / self.width);
+                            }
+                            clicked => {
+                                root.set-progress(self.mouse-x / self.width);
+                            }
+                        }
+
                         Rectangle {
                             width: 100%;
                             height: 6px;
@@ -97,22 +107,11 @@ export component MusicPage inherits VerticalLayout {
                         }
 
                         Rectangle { // Progress ball
-                    width: 15px;
+                            width: 15px;
                             height: 15px;
                             x: parent.width * root.progress - self.width / 2;
                             background: #c20000;
                             border-radius: 100px;
-                        }
-
-                        TouchArea {
-                            width: 100%;
-                            height: 500%; // Make it easier to click
-                    moved => {
-                                root.set-progress(self.mouse-x / self.width);
-                            }
-                            clicked => {
-                                root.set-progress(self.mouse-x / self.width);
-                            }
                         }
                     }
 
@@ -214,45 +213,55 @@ export component MusicPage inherits VerticalLayout {
             height: 20px;
         }
 
-        HorizontalLayout {
-            spacing: 25px;
-
-            Rectangle {
-                width: 60px;
-                height: 60px;
-                background: #1e1e2e;
-                border-radius: 12px;
-
-                Image {
-                    source: @image-url("../../assets/icons/music.svg");
-                    width: parent.width * 0.4;
-                    height: parent.height * 0.4;
+        Rectangle {
+            TouchArea {
+                width: 120%;
+                height: 200%;
+                clicked => {
+                    root.next-track();
                 }
             }
 
-            VerticalLayout {
-                alignment: space-evenly;
+            HorizontalLayout {
+                spacing: 25px;
 
-                Text {
-                    text: root.track-title;
-                    font-size: 16px;
-                    font-weight: 700;
-                    color: #ffffff;
+                Rectangle {
+                    width: 60px;
+                    height: 60px;
+                    background: #1e1e2e;
+                    border-radius: 12px;
+
+                    Image {
+                        source: @image-url("../../assets/icons/music.svg");
+                        width: parent.width * 0.4;
+                        height: parent.height * 0.4;
+                    }
+                }
+
+                VerticalLayout {
+                    alignment: space-evenly;
+
+                    Text {
+                        text: root.track-title;
+                        font-size: 16px;
+                        font-weight: 700;
+                        color: #ffffff;
+                    }
+
+                    Text {
+                        text: root.artist-name;
+                        font-size: 13px;
+                        color: #b0b0b0;
+                    }
                 }
 
                 Text {
-                    text: root.artist-name;
-                    font-size: 13px;
+                    text: ">";
+                    font-size: 30px;
                     color: #b0b0b0;
+                    vertical-alignment: center;
+                    horizontal-alignment: right;
                 }
-            }
-
-            Text {
-                text: ">";
-                font-size: 30px;
-                color: #b0b0b0;
-                vertical-alignment: center;
-                horizontal-alignment: right;
             }
         }
     }
