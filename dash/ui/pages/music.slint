@@ -106,7 +106,7 @@ export component MusicPage inherits VerticalLayout {
 
                         TouchArea {
                             width: 100%;
-                            height: 300%; // Make it easier to click
+                            height: 500%; // Make it easier to click
                     moved => {
                                 root.set-progress(self.mouse-x / self.width);
                             }
@@ -130,7 +130,7 @@ export component MusicPage inherits VerticalLayout {
 
         HorizontalLayout {
             spacing: 36px;
-            alignment: space-evenly;
+            alignment: space-around;
 
             TouchArea {
                 clicked => {
