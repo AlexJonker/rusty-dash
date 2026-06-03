@@ -50,7 +50,8 @@ export component AppWindow inherits Window {
     in-out property <string> album-name: "Album";
 
     in-out property <float> progress: 0.0;
-    in-out property <string> time: "0:00 / 0:00";
+    in-out property <string> current-time: "0:00";
+    in-out property <string> total-time: "0:00";
 
     in-out property <image> android-auto-frame;
 
@@ -121,7 +122,8 @@ export component AppWindow inherits Window {
                 album-name: root.album-name;
 
                 progress: root.progress;
-                time: root.time;
+                current-time: root.current-time;
+                total-time: root.total-time;
 
                 play-pause => {
                     root.play-pause();
