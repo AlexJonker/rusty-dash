@@ -18,217 +18,35 @@ export component MusicPage inherits VerticalLayout {
     callback toggle-shuffle();
     callback set-progress(float);
 
+    padding: 25px;
     spacing: 25px;
-    alignment: center;
-    width: 92%;
-
-    HorizontalLayout {
-        spacing: 25px;
-        alignment: center;
-        height: 160px;
-
-        Rectangle {
-            width: 180px;
-            height: 180px;
-            background: #1e1e2e;
-            border-radius: 12px;
-            y: 0 - (self.height - parent.height) / 2;
-
-            Image {
-                source: @image-url("../../assets/icons/music.svg");
-                width: 72px;
-                height: 72px;
-            }
-        }
-
-        VerticalLayout {
-            spacing: 6px;
-            width: 350px;
-            alignment: space-evenly;
-
-            Text {
-                text: root.track-title;
-                font-size: 20px;
-                font-weight: 700;
-                color: #ffffff;
-            }
-
-            Text {
-                text: root.artist-name;
-                font-size: 14px;
-                color: #b0b0b0;
-            }
-
-            Text {
-                text: root.album-name;
-                font-size: 12px;
-                color: #707070;
-            }
-
-            HorizontalLayout {
-                spacing: 12px;
-
-                Text {
-                    text: root.current-time;
-                    font-size: 11px;
-                    color: #ffffff;
-                    min-width: 32px;
-                    vertical-alignment: center;
-                    horizontal-alignment: left;
-                }
-
-                Rectangle {
-                    Rectangle {
-                        width: 100%;
-                        height: 6px;
-                        background: #404040;
-                        border-radius: 4px;
-                        clip: true;
-
-                        Rectangle {
-                            x: 0px;
-                            width: parent.width * root.progress;
-                            background: #c20000;
-                            border-radius: 4px;
-                        }
-                    }
-
-                    Rectangle { // Progress ball
-                    width: 15px;
-                        height: 15px;
-                        x: parent.width * root.progress - self.width / 2;
-                        background: #c20000;
-                        border-radius: 100px;
-                    }
-
-                    TouchArea {
-                        width: 100%;
-                        height: 300%; // Make it easier to click
-                    moved => {
-                            root.set-progress(self.mouse-x / self.width);
-                        }
-                        clicked => {
-                            root.set-progress(self.mouse-x / self.width);
-                        }
-                    }
-                }
-
-                Text {
-                    text: root.total-time;
-                    font-size: 11px;
-                    color: #ffffff;
-                    min-width: 32px;
-                    vertical-alignment: center;
-                    horizontal-alignment: right;
-                }
-            }
-        }
-    }
-
-    HorizontalLayout {
-        spacing: 36px;
-        alignment: space-evenly;
-
-        TouchArea {
-            clicked => {
-                root.toggle-shuffle();
-            }
-            Image {
-                source: root.is-shuffle-enabled ? @image-url("../../assets/icons/shuffle_enabled.svg") : @image-url("../../assets/icons/shuffle_disabled.svg");
-                width: 22px;
-                height: 22px;
-                colorize: root.is-shuffle-enabled ? #c20000 : #ffffff;
-            }
-        }
-
-        TouchArea {
-            clicked => {
-                root.previous-track();
-            }
-            Image {
-                source: @image-url("../../assets/icons/previous.svg");
-                width: 32px;
-                height: 32px;
-            }
-        }
-
-        TouchArea {
-            clicked => {
-                root.play-pause();
-            }
-            width: 52px;
-            height: 52px;
-            Rectangle {
-                width: 52px;
-                height: 52px;
-                border-radius: 26px;
-                background: #c20000;
-
-                Image {
-                    source: root.is-playing ? @image-url("../../assets/icons/pause.svg") : @image-url("../../assets/icons/play.svg");
-                    width: 30px;
-                    height: 30px;
-                }
-            }
-        }
-
-        TouchArea {
-            clicked => {
-                root.next-track();
-            }
-            Image {
-                source: @image-url("../../assets/icons/next.svg");
-                width: 32px;
-                height: 32px;
-            }
-        }
-
-        TouchArea {
-            clicked => {
-                root.toggle-loop();
-            }
-            Image {
-                source: root.is-loop-enabled ? @image-url("../../assets/icons/loop_enabled.svg") : @image-url("../../assets/icons/loop_disabled.svg");
-                width: 22px;
-                height: 22px;
-                colorize: root.is-loop-enabled ? #c20000 : #ffffff;
-            }
-        }
-    }
-
-    HorizontalDivider { }
+    alignment: space-around;
 
     VerticalLayout {
-        padding-left: 25px;
-        padding-right: 25px;
-        spacing: 10px;
-
-        Text {
-            text: "Up Next";
-            font-size: 14px;
-            color: #ffffff;
-        }
+        spacing: 25px;
 
         HorizontalLayout {
             spacing: 25px;
-            height: 80px;
+            alignment: center;
+            height: 160px;
 
             Rectangle {
-                width: 80px;
-                height: 80px;
+                width: 160px;
+                height: 160px;
                 background: #1e1e2e;
                 border-radius: 12px;
+                y: 0 - (self.height - parent.height) / 2;
 
                 Image {
                     source: @image-url("../../assets/icons/music.svg");
-                    width: 32px;
-                    height: 32px;
+                    width: parent.width * 0.4;
+                    height: parent.height * 0.4;
                 }
             }
 
             VerticalLayout {
+                spacing: 6px;
                 width: 350px;
-                height: 80px;
                 alignment: space-evenly;
 
                 Text {
@@ -249,7 +67,186 @@ export component MusicPage inherits VerticalLayout {
                     font-size: 12px;
                     color: #707070;
                 }
+
+                HorizontalLayout {
+                    spacing: 12px;
+
+                    Text {
+                        text: root.current-time;
+                        font-size: 11px;
+                        color: #ffffff;
+                        min-width: 32px;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+
+                    Rectangle {
+                        Rectangle {
+                            width: 100%;
+                            height: 6px;
+                            background: #404040;
+                            border-radius: 4px;
+                            clip: true;
+
+                            Rectangle {
+                                x: 0px;
+                                width: parent.width * root.progress;
+                                background: #c20000;
+                                border-radius: 4px;
+                            }
+                        }
+
+                        Rectangle { // Progress ball
+                    width: 15px;
+                            height: 15px;
+                            x: parent.width * root.progress - self.width / 2;
+                            background: #c20000;
+                            border-radius: 100px;
+                        }
+
+                        TouchArea {
+                            width: 100%;
+                            height: 300%; // Make it easier to click
+                    moved => {
+                                root.set-progress(self.mouse-x / self.width);
+                            }
+                            clicked => {
+                                root.set-progress(self.mouse-x / self.width);
+                            }
+                        }
+                    }
+
+                    Text {
+                        text: root.total-time;
+                        font-size: 11px;
+                        color: #ffffff;
+                        min-width: 32px;
+                        vertical-alignment: center;
+                        horizontal-alignment: right;
+                    }
+                }
             }
+        }
+
+        HorizontalLayout {
+            spacing: 36px;
+            alignment: space-evenly;
+
+            TouchArea {
+                clicked => {
+                    root.toggle-shuffle();
+                }
+                Image {
+                    source: root.is-shuffle-enabled ? @image-url("../../assets/icons/shuffle_enabled.svg") : @image-url("../../assets/icons/shuffle_disabled.svg");
+                    width: 32px;
+                    height: 32px;
+                    colorize: root.is-shuffle-enabled ? #c20000 : #ffffff;
+                }
+            }
+
+            TouchArea {
+                clicked => {
+                    root.previous-track();
+                }
+                Image {
+                    source: @image-url("../../assets/icons/previous.svg");
+                    width: 42px;
+                    height: 42px;
+                }
+            }
+
+            TouchArea {
+                clicked => {
+                    root.play-pause();
+                }
+                width: 62px;
+                height: 62px;
+                Rectangle {
+                    width: 62px;
+                    height: 62px;
+                    border-radius: 100px;
+                    background: #c20000;
+
+                    Image {
+                        source: root.is-playing ? @image-url("../../assets/icons/pause.svg") : @image-url("../../assets/icons/play.svg");
+                        width: 30px;
+                        height: 30px;
+                    }
+                }
+            }
+
+            TouchArea {
+                clicked => {
+                    root.next-track();
+                }
+                Image {
+                    source: @image-url("../../assets/icons/next.svg");
+                    width: 42px;
+                    height: 42px;
+                }
+            }
+
+            TouchArea {
+                clicked => {
+                    root.toggle-loop();
+                }
+                Image {
+                    source: root.is-loop-enabled ? @image-url("../../assets/icons/loop_enabled.svg") : @image-url("../../assets/icons/loop_disabled.svg");
+                    width: 42px;
+                    height: 42px;
+                    colorize: root.is-loop-enabled ? #c20000 : #ffffff;
+                }
+            }
+        }
+    }
+
+    HorizontalDivider { }
+
+    VerticalLayout {
+        padding-left: 25px;
+        padding-right: 25px;
+        spacing: 10px;
+
+        Text {
+            text: "Up Next";
+            font-size: 14px;
+            color: #ffffff;
+            height: 20px;
+        }
+
+        HorizontalLayout {
+            spacing: 25px;
+
+            Rectangle {
+                width: 60px;
+                height: 60px;
+                background: #1e1e2e;
+                border-radius: 12px;
+
+                Image {
+                    source: @image-url("../../assets/icons/music.svg");
+                    width: parent.width * 0.4;
+                    height: parent.height * 0.4;
+                }
+            }
+
+            VerticalLayout {
+                alignment: space-evenly;
+
+                Text {
+                    text: root.track-title;
+                    font-size: 16px;
+                    font-weight: 700;
+                    color: #ffffff;
+                }
+
+                Text {
+                    text: root.artist-name;
+                    font-size: 13px;
+                    color: #b0b0b0;
+                }
+            }
+
             Text {
                 text: ">";
                 font-size: 30px;
