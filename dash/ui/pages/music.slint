@@ -27,7 +27,6 @@ export component MusicPage inherits VerticalLayout {
 
         HorizontalLayout {
             spacing: 25px;
-            alignment: center;
             height: 160px;
 
             Rectangle {
@@ -46,7 +45,6 @@ export component MusicPage inherits VerticalLayout {
 
             VerticalLayout {
                 spacing: 6px;
-                width: 350px;
                 alignment: space-evenly;
 
                 Text {
@@ -128,13 +126,18 @@ export component MusicPage inherits VerticalLayout {
         }
 
         HorizontalLayout {
-            spacing: 36px;
-            alignment: space-around;
+            alignment: space-between;
 
-            TouchArea {
-                clicked => {
-                    root.toggle-shuffle();
+            Rectangle {
+                width: 32px;
+                height: 62px;
+
+                TouchArea {
+                    clicked => {
+                        root.toggle-shuffle();
+                    }
                 }
+
                 Image {
                     source: root.is-shuffle-enabled ? @image-url("../../assets/icons/shuffle_enabled.svg") : @image-url("../../assets/icons/shuffle_disabled.svg");
                     width: 32px;
@@ -143,10 +146,16 @@ export component MusicPage inherits VerticalLayout {
                 }
             }
 
-            TouchArea {
-                clicked => {
-                    root.previous-track();
+            Rectangle {
+                width: 32px;
+                height: 62px;
+
+                TouchArea {
+                    clicked => {
+                        root.previous-track();
+                    }
                 }
+
                 Image {
                     source: @image-url("../../assets/icons/previous.svg");
                     width: 42px;
@@ -154,12 +163,16 @@ export component MusicPage inherits VerticalLayout {
                 }
             }
 
-            TouchArea {
-                clicked => {
-                    root.play-pause();
-                }
-                width: 62px;
+            Rectangle {
+                width: 32px;
                 height: 62px;
+
+                TouchArea {
+                    clicked => {
+                        root.play-pause();
+                    }
+                }
+
                 Rectangle {
                     width: 62px;
                     height: 62px;
@@ -174,10 +187,16 @@ export component MusicPage inherits VerticalLayout {
                 }
             }
 
-            TouchArea {
-                clicked => {
-                    root.next-track();
+            Rectangle {
+                width: 32px;
+                height: 62px;
+
+                TouchArea {
+                    clicked => {
+                        root.next-track();
+                    }
                 }
+
                 Image {
                     source: @image-url("../../assets/icons/next.svg");
                     width: 42px;
@@ -185,14 +204,20 @@ export component MusicPage inherits VerticalLayout {
                 }
             }
 
-            TouchArea {
-                clicked => {
-                    root.toggle-loop();
+            Rectangle {
+                width: 32px;
+                height: 62px;
+
+                TouchArea {
+                    clicked => {
+                        root.toggle-loop();
+                    }
                 }
+
                 Image {
                     source: root.is-loop-enabled ? @image-url("../../assets/icons/loop_enabled.svg") : @image-url("../../assets/icons/loop_disabled.svg");
-                    width: 42px;
-                    height: 42px;
+                    width: 32px;
+                    height: 32px;
                     colorize: root.is-loop-enabled ? #c20000 : #ffffff;
                 }
             }
@@ -202,8 +227,6 @@ export component MusicPage inherits VerticalLayout {
     HorizontalDivider { }
 
     VerticalLayout {
-        padding-left: 25px;
-        padding-right: 25px;
         spacing: 10px;
 
         Text {
