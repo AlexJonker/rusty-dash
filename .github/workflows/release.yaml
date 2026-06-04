@@ -42,6 +42,7 @@ jobs:
       - uses: Swatinem/rust-cache@master
         with:
           prefix-key: "arm64-build"
+          workspaces: "dash -> target"
 
       - name: Build dashboard
         run: |
@@ -75,6 +76,7 @@ jobs:
       - uses: Swatinem/rust-cache@master
         with:
           prefix-key: "amd64-build"
+          workspaces: "dash -> target"
 
       - name: Build dashboard
         run: |
@@ -261,6 +263,7 @@ jobs:
       - uses: Swatinem/rust-cache@master
         with:
           prefix-key: "screenshots"
+          workspaces: "dash -> target"
 
       - name: Generate screenshots
         run: |
