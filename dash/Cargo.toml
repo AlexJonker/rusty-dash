@@ -29,3 +29,27 @@ path = "src/bin/screenshot.rs"
 # This patch is needed for the v1 certificate in android-auto's src/cert.rs
 [patch.crates-io]
 rustls-webpki = { git = "https://github.com/uglyoldbob/webpki", branch = "main5" }
+
+[profile.release]
+strip = true
+opt-level = 3
+lto = true
+panic = "abort"
+codegen-units = 1
+
+[profile.dev]
+opt-level = 0
+
+[profile.dev.package."*"]
+opt-level = 3
+
+[profile.screenshot] # Faster compile time
+inherits = "release"
+strip = true
+opt-level = 0
+lto = false
+codegen-units = 16
+panic = "abort"
+
+[profile.screenshot.package."*"]
+opt-level = 0

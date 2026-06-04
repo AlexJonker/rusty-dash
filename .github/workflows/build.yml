@@ -245,7 +245,7 @@ jobs:
           ref: "main"
 
       - name: Generate screenshots
-        run: cargo run --release --bin screenshot
+        run: cargo run --profile screenshot --bin screenshot
 
       - name: Commit screenshots
         run: |
