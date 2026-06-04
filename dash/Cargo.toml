@@ -2,6 +2,7 @@
 name = "rusty-dash"
 version = "0.0.14"
 edition = "2024"
+default-run = "rusty-dash"
 
 [dependencies]
 slint = { git = "https://github.com/slint-ui/slint", features = ["backend-linuxkms"] }
@@ -15,9 +16,15 @@ log = "*"
 simple_logger = "*"
 async-trait = "*"
 rodio = "*"
+image = "*"
 
 [build-dependencies]
 slint-build = { git = "https://github.com/slint-ui/slint" }
+
+
+[[bin]]
+name = "screenshot"
+path = "src/bin/screenshot.rs"
 
 # This patch is needed for the v1 certificate in android-auto's src/cert.rs
 [patch.crates-io]

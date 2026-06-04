@@ -232,3 +232,24 @@ jobs:
           overwrite_files: true
           files: |
             image*.img.xz
+
+  update-screenshots:
+    name: Update Screenshots
+    runs-on: ubuntu-latest
+    needs: [get-version, release-image]
+
+    steps:
+      - name: Checkout dash
+        uses: actions/checkout@v6
+        with:
+          ref: "main"
+
+      - name: Generate screenshots
+        run: cargo run --release --bin screenshot
+
+      - name: Commit screenshots
+        run: |
+          git config user.name "Rusty Dash"
+          git add -A
+          git commit -m "Update screenshots for release v${{ needs.get-version.outputs.version }}"
+          git push

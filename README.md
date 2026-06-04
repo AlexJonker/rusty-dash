@@ -18,3 +18,22 @@
 Root password is `root`
 
 User is called `driver` and password is `driver`
+
+## Screenshots
+### Music
+
+<div>
+    <img src="./screenshots/music.png" alt="Music Page" width="400" />
+</div>
+
+### Android Auto
+
+<div>
+    <img src="./screenshots/android-auto.png" alt="Android Auto Page" width="400" />
+</div>
+
+### Settings
+
+<div>
+    <img src="./screenshots/settings.png" alt="Settings Page" width="400" />
+</div>
