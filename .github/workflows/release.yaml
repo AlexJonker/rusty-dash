@@ -39,6 +39,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "arm64-build"
+
       - name: Build dashboard
         run: |
           cd dash
@@ -68,6 +72,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev
 
+      - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "amd64-build"
+
       - name: Build dashboard
         run: |
           cd dash
@@ -81,7 +89,6 @@ jobs:
         with:
           name: rusty-dash-binary-amd64
           path: rusty-dash-amd64.xz
-
 
   release-binary:
     name: Release Binaries
@@ -110,6 +117,7 @@ jobs:
           files: |
             rusty-dash-arm64.xz
             rusty-dash-amd64.xz
+
   build-pi-image:
     name: Build RPi Image
     runs-on: ubuntu-24.04-arm
@@ -243,6 +251,10 @@ jobs:
         uses: actions/checkout@v6
         with:
           ref: "main"
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "screenshots"
 
       - name: Generate screenshots
         run: |
