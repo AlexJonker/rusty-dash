@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout dash
-        uses: actions/checkout@v6
+        uses: actions/checkout@main
         with:
           ref: "main"
 
@@ -30,7 +30,7 @@ jobs:
 
     steps:
       - name: Checkout dash
-        uses: actions/checkout@v6
+        uses: actions/checkout@main
         with:
           ref: "main"
 
@@ -39,7 +39,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@master
         with:
           prefix-key: "arm64-build"
 
@@ -52,7 +52,7 @@ jobs:
         run: xz -c dash/target/release/rusty-dash > rusty-dash-arm64.xz
 
       - name: Upload binary
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@main
         with:
           name: rusty-dash-binary-arm64
           path: rusty-dash-arm64.xz
@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - name: Checkout dash
-        uses: actions/checkout@v6
+        uses: actions/checkout@main
         with:
           ref: "main"
 
@@ -72,7 +72,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@master
         with:
           prefix-key: "amd64-build"
 
@@ -85,7 +85,7 @@ jobs:
         run: xz -c dash/target/release/rusty-dash > rusty-dash-amd64.xz
 
       - name: Upload binary
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@main
         with:
           name: rusty-dash-binary-amd64
           path: rusty-dash-amd64.xz
@@ -96,20 +96,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@main
         with:
           ref: "main"
 
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@main
         with:
           name: rusty-dash-binary-arm64
 
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@main
         with:
           name: rusty-dash-binary-amd64
 
       - name: Release dash binary
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@master
         with:
           tag_name: ${{ format('v{0}', needs.get-version.outputs.version) }}
           name: ${{ format('v{0}', needs.get-version.outputs.version) }}
@@ -125,10 +125,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@main
 
       - name: Download binary
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@main
         with:
           name: rusty-dash-binary-arm64
 
@@ -174,7 +174,7 @@ jobs:
           chmod +x custom-stage/01-customization/00-run.sh
           chmod +x custom-stage/01-customization/00-run-chroot.sh
 
-      - uses: usimd/pi-gen-action@v1
+      - uses: usimd/pi-gen-action@main
         id: build
         with:
           apt-proxy: ""
@@ -213,7 +213,7 @@ jobs:
           wpa-essid: ""
           wpa-password: ""
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@main
         with:
           name: rusty-dash-image
           path: ${{ steps.build.outputs.image-path }}
@@ -224,16 +224,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@main
         with:
           ref: "main"
 
-      - uses: actions/download-artifact@v8
+      - uses: actions/download-artifact@main
         with:
           name: rusty-dash-image
 
       - name: Release arm64 image
-        uses: softprops/action-gh-release@v3
+        uses: softprops/action-gh-release@master
         with:
           tag_name: ${{ format('v{0}', needs.get-version.outputs.version) }}
           name: ${{ format('v{0}', needs.get-version.outputs.version) }}
@@ -248,11 +248,11 @@ jobs:
 
     steps:
       - name: Checkout dash
-        uses: actions/checkout@v6
+        uses: actions/checkout@main
         with:
           ref: "main"
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@master
         with:
           prefix-key: "screenshots"
 
