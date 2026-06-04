@@ -1,4 +1,5 @@
 import { MusicPage } from "./pages/music.slint";
+import { LibraryPage } from "./pages/library.slint";
 import { AndroidAutoPage } from "./pages/android_auto.slint";
 import { SettingsPage } from "./pages/settings.slint";
 import {
@@ -102,7 +103,7 @@ export component AppWindow inherits Window {
                 }
 
                 SidebarItem {
-                    image: @image-url("../assets/icons/android_auto.svg");
+                    image: @image-url("../assets/icons/library.svg");
                     active: root.current-page == 1;
                     clicked => {
                         root.current-page = 1;
@@ -110,10 +111,18 @@ export component AppWindow inherits Window {
                 }
 
                 SidebarItem {
-                    image: @image-url("../assets/icons/settings.svg");
+                    image: @image-url("../assets/icons/android_auto.svg");
                     active: root.current-page == 2;
                     clicked => {
                         root.current-page = 2;
+                    }
+                }
+
+                SidebarItem {
+                    image: @image-url("../assets/icons/settings.svg");
+                    active: root.current-page == 3;
+                    clicked => {
+                        root.current-page = 3;
                     }
                 }
             }
@@ -158,14 +167,16 @@ export component AppWindow inherits Window {
                 }
             }
 
-            if root.current-page == 1: AndroidAutoPage {
+            if root.current-page == 1: LibraryPage { }
+
+            if root.current-page == 2: AndroidAutoPage {
                 android-auto-frame: root.android-auto-frame;
                 handle_touch(x, y, action) => {
                     root.handle_android_auto_touch(x, y, action);
                 }
             }
 
-            if root.current-page == 2: SettingsPage {
+            if root.current-page == 3: SettingsPage {
                 app-version: root.app-version;
                 shutdown => {
                     root.shutdown();

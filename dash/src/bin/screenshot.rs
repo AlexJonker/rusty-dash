@@ -27,7 +27,7 @@ fn main() {
     ui.set_app_version(env!("CARGO_PKG_VERSION").into());
     window.set_size(slint::PhysicalSize::new(WIDTH, HEIGHT));
 
-    let pages = ["music", "android-auto", "settings"];
+    let pages = ["music", "library", "android-auto", "settings"];
     let mut buffer = vec![Rgb8Pixel { r: 0, g: 0, b: 0 }; (WIDTH * HEIGHT) as usize];
 
     ui.set_is_shuffle_enabled(true);

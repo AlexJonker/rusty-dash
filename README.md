@@ -24,6 +24,7 @@ User is called `driver` and password is `driver`
 
 <div>
     <img src="./screenshots/music.png" alt="Music Page" width="400" />
+    <img src="./screenshots/library.png" alt="Music Library Page" width="400" />
 </div>
 
 ### Android Auto

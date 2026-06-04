@@ -1,0 +1,30 @@
+import { VerticalBox } from "std-widgets.slint";
+import { Button, HorizontalDivider } from "../custom-components.slint";
+
+export component LibraryPage inherits VerticalLayout {
+    alignment: center;
+
+    HorizontalLayout {
+        alignment: center;
+
+        VerticalLayout {
+            spacing: 8px;
+            width: 400px;
+
+            Text {
+                text: "Music Library";
+                font-size: 24px;
+                font-weight: 700;
+                color: #ffffff;
+            }
+
+            HorizontalDivider { }
+
+            Text {
+                text: "Hello, World!";
+                font-size: 16px;
+                color: #b0b0b0;
+            }
+        }
+    }
+}
