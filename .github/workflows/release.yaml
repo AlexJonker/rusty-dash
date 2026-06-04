@@ -205,6 +205,7 @@ jobs:
           release: trixie
           setfcap: ""
           stage-list: stage0 stage1 stage2 ./custom-stage
+          enable-pigen-cache: true
           temp-repo: ""
           timezone: Europe/Brussels
           username: driver
