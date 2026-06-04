@@ -24,6 +24,7 @@ fn main() {
         .expect("platform already set");
 
     let ui = AppWindow::new().unwrap();
+    ui.set_app_version(env!("CARGO_PKG_VERSION").into());
     window.set_size(slint::PhysicalSize::new(WIDTH, HEIGHT));
 
     let pages = ["music", "android-auto", "settings"];
