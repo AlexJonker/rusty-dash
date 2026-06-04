@@ -176,7 +176,7 @@ jobs:
           chmod +x custom-stage/01-customization/00-run.sh
           chmod +x custom-stage/01-customization/00-run-chroot.sh
 
-      - uses: usimd/pi-gen-action@main
+      - uses: usimd/pi-gen-action@v1
         id: build
         with:
           apt-proxy: ""
@@ -207,7 +207,7 @@ jobs:
           release: trixie
           setfcap: ""
           stage-list: stage0 stage1 stage2 ./custom-stage
-          enable-pigen-cache: true
+          # enable-pigen-cache: true  # Uncomment when new pi-gen-action version is released
           temp-repo: ""
           timezone: Europe/Brussels
           username: driver
