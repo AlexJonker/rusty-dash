@@ -1,5 +1,5 @@
 import { MusicPage } from "./pages/music.slint";
-import { LibraryPage } from "./pages/library.slint";
+import { MusicLibraryPage } from "./pages/music_library.slint";
 import { AndroidAutoPage } from "./pages/android_auto.slint";
 import { SettingsPage } from "./pages/settings.slint";
 import {
@@ -167,7 +167,7 @@ export component AppWindow inherits Window {
                 }
             }
 
-            if root.current-page == 1: LibraryPage { }
+            if root.current-page == 1: MusicLibraryPage { }
 
             if root.current-page == 2: AndroidAutoPage {
                 android-auto-frame: root.android-auto-frame;
