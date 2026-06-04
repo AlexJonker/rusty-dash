@@ -1,4 +1,4 @@
-<p align="center">
+<div align="center">
   <!-- <img src="./assets/icon.png" alt="logo" width="150" /> -->
   <br>
   <strong>Rusty Dash</strong>
@@ -6,7 +6,7 @@
   A full linux based headunit system for in my miata.
   <br>
   I am running this on a pi3 with a 7 inch touchscreen.
-</p>
+</div>
 
 ## Installation
 
