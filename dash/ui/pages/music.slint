@@ -89,6 +89,9 @@ export component MusicPage inherits VerticalLayout {
                                     root.progress = max(0.0, min(1.0, self.mouse-x / self.width)); // Move slider visually
                                     root.set-progress(root.progress); // Set actual progress
                                 }
+                                if (event.kind == PointerEventKind.down) {
+                                    root.progress = max(0.0, min(1.0, self.mouse-x / self.width)); // Move slider visually
+                                }
                             }
                         }
 
