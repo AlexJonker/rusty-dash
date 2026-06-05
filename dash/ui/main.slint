@@ -50,6 +50,9 @@ export component AppWindow inherits Window {
     in-out property <string> artist-name: "Artist";
     in-out property <string> album-name: "Album";
 
+    in-out property <string> next-track-title: "Next Track";
+    in-out property <string> next-track-artist: "Next Artist";
+
     in-out property <float> progress: 0.0;
     in-out property <string> current-time: "0:00";
     in-out property <string> total-time: "0:00";
@@ -150,6 +153,9 @@ export component AppWindow inherits Window {
                 track-title: root.track-title;
                 artist-name: root.artist-name;
                 album-name: root.album-name;
+
+                next-track-title: root.next-track-title;
+                next-track-artist: root.next-track-artist;
 
                 progress: root.progress;
                 current-time: root.current-time;

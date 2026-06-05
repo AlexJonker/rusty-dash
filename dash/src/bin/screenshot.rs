@@ -27,12 +27,24 @@ fn main() {
 
     let ui = AppWindow::new().unwrap();
     ui.set_app_version(env!("CARGO_PKG_VERSION").into());
+
+    ui.set_is_shuffle_enabled(true);
+
+    ui.set_artist_name("Linkin Park".into());
+    ui.set_album_name("Hybrid Theory".into());
+    ui.set_track_title("Papercut".into());
+
+    ui.set_next_track_title("In the End".into());
+    ui.set_next_track_artist("Linkin Park".into());
+
+    ui.set_total_time("3:05".into());
+    ui.set_current_time("0:56".into());
+    ui.set_progress(0.3);
+
     window.set_size(slint::PhysicalSize::new(WIDTH, HEIGHT));
 
     let pages = ["music", "library", "android-auto", "settings"];
     let mut buffer = vec![Rgb8Pixel { r: 0, g: 0, b: 0 }; (WIDTH * HEIGHT) as usize];
-
-    ui.set_is_shuffle_enabled(true);
 
     for (page, name) in pages.iter().enumerate() {
         ui.set_current_page(page as i32);

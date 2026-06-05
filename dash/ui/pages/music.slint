@@ -2,12 +2,18 @@ import { Button, HorizontalDivider } from "../custom-components.slint";
 
 export component MusicPage inherits VerticalLayout {
     in-out property <bool> dark-mode: true;
+
     in-out property <bool> is-playing;
     in-out property <bool> is-loop-enabled;
     in-out property <bool> is-shuffle-enabled;
+
     in-out property <string> track-title;
     in-out property <string> artist-name;
     in-out property <string> album-name;
+
+    in-out property <string> next-track-title;
+    in-out property <string> next-track-artist;
+
     in-out property <float> progress;
     in-out property <string> current-time;
     in-out property <string> total-time;
@@ -291,14 +297,14 @@ export component MusicPage inherits VerticalLayout {
                     alignment: space-evenly;
 
                     Text {
-                        text: root.track-title;
+                        text: root.next-track-title;
                         font-size: 16px;
                         font-weight: 700;
                         color: root.dark-mode ? #ffffff : #1a1a1a;
                     }
 
                     Text {
-                        text: root.artist-name;
+                        text: root.next-track-artist;
                         font-size: 13px;
                         color: root.dark-mode ? #b0b0b0 : #555555;
                     }
