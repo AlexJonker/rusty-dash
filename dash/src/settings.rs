@@ -1,3 +1,5 @@
+use slint::ComponentHandle;
+
 use crate::AppWindow;
 
 pub struct SettingsController;
@@ -14,6 +16,13 @@ impl SettingsController {
         ui.on_reboot(move || match system_shutdown::reboot() {
             Ok(()) => println!("Rebooting, see you soon!"),
             Err(error) => eprintln!("Failed to reboot: {error}"),
+        });
+
+        let ui_handle = ui.as_weak();
+        ui.on_toggle_dark_mode(move || {
+            let ui = ui_handle.unwrap();
+            ui.set_dark_mode(!ui.get_dark_mode());
+            // TODO: store theme in appsettings somewhere
         });
 
         Self

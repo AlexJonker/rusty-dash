@@ -1,10 +1,16 @@
 import { VerticalBox } from "std-widgets.slint";
-import { Button, HorizontalDivider } from "../custom-components.slint";
+import {
+    Button,
+    HorizontalDivider,
+    ToggleSwitch,
+} from "../custom-components.slint";
 
 export component SettingsPage inherits VerticalLayout {
+    in-out property <bool> dark-mode: true;
     in-out property <string> app-version: "Unknown";
     callback shutdown();
     callback reboot();
+    callback toggle-dark-mode();
 
     alignment: center;
 
@@ -19,16 +25,31 @@ export component SettingsPage inherits VerticalLayout {
                 text: "Settings";
                 font-size: 24px;
                 font-weight: 700;
-                color: #ffffff;
+                color: root.dark-mode ? #ffffff : #000000;
             }
 
             HorizontalDivider { }
 
-            Text {
-                text: "Hello, World!";
-                font-size: 16px;
-                color: #b0b0b0;
+            HorizontalLayout {
+                alignment: start;
+                spacing: 16px;
+
+                Text {
+                    text: "Dark Mode";
+                    font-size: 16px;
+                    color: root.dark-mode ? #b0b0b0 : #555555;
+                    vertical-alignment: center;
+                }
+
+                ToggleSwitch {
+                    checked: root.dark-mode;
+                    clicked => {
+                        root.toggle-dark-mode();
+                    }
+                }
             }
+
+            HorizontalDivider { }
 
             Button {
                 text: "Shutdown";
@@ -53,7 +74,7 @@ export component SettingsPage inherits VerticalLayout {
             Text {
                 text: "rusty-dash v" + app-version;
                 font-size: 12px;
-                color: #707070;
+                color: root.dark-mode ? #707070 : #888888;
             }
         }
     }

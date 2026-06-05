@@ -36,12 +36,28 @@
     touch := TouchArea { }
 }
 
-export component HorizontalDivider inherits Rectangle {
-    height: 1px;
-    background: #80808050;
+export component ToggleSwitch inherits Rectangle {
+    callback clicked <=> touch.clicked;
+    in-out property <bool> checked;
+
+    width: 50px;
+    height: 28px;
+    border-radius: 14px;
+    background: root.checked ? #c20000 : #555555;
+
+    Rectangle {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        background: #ffffff;
+        x: root.checked ? parent.width - self.width - 2px : 2px;
+        y: 2px;
+    }
+
+    touch := TouchArea { }
 }
 
-export component VerticalDivider inherits Rectangle {
-    width: 1px;
+export component HorizontalDivider inherits Rectangle {
+    height: 1px;
     background: #80808050;
 }

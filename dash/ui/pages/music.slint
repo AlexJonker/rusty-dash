@@ -1,6 +1,7 @@
 import { Button, HorizontalDivider } from "../custom-components.slint";
 
 export component MusicPage inherits VerticalLayout {
+    in-out property <bool> dark-mode: true;
     in-out property <bool> is-playing;
     in-out property <bool> is-loop-enabled;
     in-out property <bool> is-shuffle-enabled;
@@ -32,7 +33,7 @@ export component MusicPage inherits VerticalLayout {
             Rectangle {
                 width: 160px;
                 height: 160px;
-                background: #1e1e2e;
+                background: root.dark-mode ? #1e1e2e : #e0e0e0;
                 border-radius: 12px;
                 y: 0 - (self.height - parent.height) / 2;
 
@@ -40,6 +41,7 @@ export component MusicPage inherits VerticalLayout {
                     source: @image-url("../../assets/icons/music.svg");
                     width: parent.width * 0.4;
                     height: parent.height * 0.4;
+                    colorize: root.dark-mode ? #ffffff : #555555;
                 }
             }
 
@@ -51,19 +53,19 @@ export component MusicPage inherits VerticalLayout {
                     text: root.track-title;
                     font-size: 20px;
                     font-weight: 700;
-                    color: #ffffff;
+                    color: root.dark-mode ? #ffffff : #1a1a1a;
                 }
 
                 Text {
                     text: root.artist-name;
                     font-size: 14px;
-                    color: #b0b0b0;
+                    color: root.dark-mode ? #b0b0b0 : #555555;
                 }
 
                 Text {
                     text: root.album-name;
                     font-size: 12px;
-                    color: #707070;
+                    color: root.dark-mode ? #707070 : #888888;
                 }
 
                 HorizontalLayout {
@@ -72,7 +74,7 @@ export component MusicPage inherits VerticalLayout {
                     Text {
                         text: root.current-time;
                         font-size: 11px;
-                        color: #ffffff;
+                        color: root.dark-mode ? #ffffff : #1a1a1a;
                         min-width: 32px;
                         vertical-alignment: center;
                         horizontal-alignment: left;
@@ -98,7 +100,7 @@ export component MusicPage inherits VerticalLayout {
                         Rectangle {
                             width: 100%;
                             height: 6px;
-                            background: #404040;
+                            background: root.dark-mode ? #404040 : #cccccc;
                             border-radius: 4px;
                             clip: true;
 
@@ -122,7 +124,7 @@ export component MusicPage inherits VerticalLayout {
                     Text {
                         text: root.total-time;
                         font-size: 11px;
-                        color: #ffffff;
+                        color: root.dark-mode ? #ffffff : #1a1a1a;
                         min-width: 32px;
                         vertical-alignment: center;
                         horizontal-alignment: right;
@@ -151,7 +153,7 @@ export component MusicPage inherits VerticalLayout {
                     source: root.is-shuffle-enabled ? @image-url("../../assets/icons/shuffle_enabled.svg") : @image-url("../../assets/icons/shuffle_disabled.svg");
                     width: 32px;
                     height: 32px;
-                    colorize: root.is-shuffle-enabled ? #c20000 : #ffffff;
+                    colorize: root.is-shuffle-enabled ? #c20000 : root.dark-mode ? #ffffff : #555555;
                 }
             }
 
@@ -172,6 +174,7 @@ export component MusicPage inherits VerticalLayout {
                     source: @image-url("../../assets/icons/previous.svg");
                     width: 42px;
                     height: 42px;
+                    colorize: root.dark-mode ? #ffffff : #555555;
                 }
             }
 
@@ -219,6 +222,7 @@ export component MusicPage inherits VerticalLayout {
                     source: @image-url("../../assets/icons/next.svg");
                     width: 42px;
                     height: 42px;
+                    colorize: root.dark-mode ? #ffffff : #555555;
                 }
             }
 
@@ -239,7 +243,7 @@ export component MusicPage inherits VerticalLayout {
                     source: root.is-loop-enabled ? @image-url("../../assets/icons/loop_enabled.svg") : @image-url("../../assets/icons/loop_disabled.svg");
                     width: 32px;
                     height: 32px;
-                    colorize: root.is-loop-enabled ? #c20000 : #ffffff;
+                    colorize: root.is-loop-enabled ? #c20000 : root.dark-mode ? #ffffff : #555555;
                 }
             }
         }
@@ -253,7 +257,7 @@ export component MusicPage inherits VerticalLayout {
         Text {
             text: "Up Next";
             font-size: 14px;
-            color: #ffffff;
+            color: root.dark-mode ? #ffffff : #1a1a1a;
             height: 20px;
         }
 
@@ -272,13 +276,14 @@ export component MusicPage inherits VerticalLayout {
                 Rectangle {
                     width: 60px;
                     height: 60px;
-                    background: #1e1e2e;
+                    background: root.dark-mode ? #1e1e2e : #e0e0e0;
                     border-radius: 12px;
 
                     Image {
                         source: @image-url("../../assets/icons/music.svg");
                         width: parent.width * 0.4;
                         height: parent.height * 0.4;
+                        colorize: root.dark-mode ? #ffffff : #555555;
                     }
                 }
 
@@ -289,20 +294,20 @@ export component MusicPage inherits VerticalLayout {
                         text: root.track-title;
                         font-size: 16px;
                         font-weight: 700;
-                        color: #ffffff;
+                        color: root.dark-mode ? #ffffff : #1a1a1a;
                     }
 
                     Text {
                         text: root.artist-name;
                         font-size: 13px;
-                        color: #b0b0b0;
+                        color: root.dark-mode ? #b0b0b0 : #555555;
                     }
                 }
 
                 Text {
                     text: ">";
                     font-size: 30px;
-                    color: #b0b0b0;
+                    color: root.dark-mode ? #b0b0b0 : #555555;
                     vertical-alignment: center;
                     horizontal-alignment: right;
                 }

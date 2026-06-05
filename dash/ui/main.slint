@@ -6,12 +6,12 @@ import {
     Button,
     ImageButton,
     HorizontalDivider,
-    VerticalDivider,
 } from "./custom-components.slint";
 
 component SidebarItem inherits Rectangle {
     in-out property <image> image;
     in-out property <bool> active;
+    in-out property <bool> dark-mode: true;
     callback clicked;
 
     width: 100px;
@@ -32,7 +32,7 @@ component SidebarItem inherits Rectangle {
         image: root.image;
         image-width: 42px;
         image-height: 42px;
-        image-color: active ? #e53935 : #888888;
+        image-color: active ? #e53935 : root.dark-mode ? #888888 : #666666;
         clicked => {
             root.clicked();
         }
@@ -56,6 +56,8 @@ export component AppWindow inherits Window {
 
     in-out property <image> android-auto-frame;
 
+    in-out property <bool> dark-mode: true;
+
     callback play-pause();
     callback next-track();
     callback previous-track();
@@ -67,6 +69,7 @@ export component AppWindow inherits Window {
 
     callback shutdown();
     callback reboot();
+    callback toggle-dark-mode();
     callback handle_android_auto_touch(int, int, int);
 
     title: "Rusty Dash";
@@ -75,17 +78,17 @@ export component AppWindow inherits Window {
     width: 800px;
     height: 480px;
 
-    background: #000000;
+    background: root.dark-mode ? #000000 : #e8e8e8;
 
     HorizontalLayout {
         spacing: 10px;
         padding: 10px;
 
         Rectangle {
-            background: #121212;
+            background: root.dark-mode ? #121212 : #ffffff;
             border-radius: 12px;
             border-width: 1px;
-            border-color: #70707084;
+            border-color: root.dark-mode ? #70707084 : #c8c8c880;
 
             VerticalLayout {
                 width: 100px;
@@ -96,6 +99,7 @@ export component AppWindow inherits Window {
 
                 SidebarItem {
                     image: @image-url("../assets/icons/music.svg");
+                    dark-mode: root.dark-mode;
                     active: root.current-page == 0;
                     clicked => {
                         root.current-page = 0;
@@ -104,6 +108,7 @@ export component AppWindow inherits Window {
 
                 SidebarItem {
                     image: @image-url("../assets/icons/library.svg");
+                    dark-mode: root.dark-mode;
                     active: root.current-page == 1;
                     clicked => {
                         root.current-page = 1;
@@ -112,6 +117,7 @@ export component AppWindow inherits Window {
 
                 SidebarItem {
                     image: @image-url("../assets/icons/android_auto.svg");
+                    dark-mode: root.dark-mode;
                     active: root.current-page == 2;
                     clicked => {
                         root.current-page = 2;
@@ -120,6 +126,7 @@ export component AppWindow inherits Window {
 
                 SidebarItem {
                     image: @image-url("../assets/icons/settings.svg");
+                    dark-mode: root.dark-mode;
                     active: root.current-page == 3;
                     clicked => {
                         root.current-page = 3;
@@ -129,12 +136,13 @@ export component AppWindow inherits Window {
         }
 
         Rectangle {
-            background: #121212;
+            background: root.dark-mode ? #121212 : #ffffff;
             border-radius: 12px;
             border-width: 1px;
-            border-color: #70707084;
+            border-color: root.dark-mode ? #70707084 : #c8c8c880;
 
             if root.current-page == 0: MusicPage {
+                dark-mode: root.dark-mode;
                 is-playing: root.is-playing;
                 is-loop-enabled: root.is-loop-enabled;
                 is-shuffle-enabled: root.is-shuffle-enabled;
@@ -167,7 +175,9 @@ export component AppWindow inherits Window {
                 }
             }
 
-            if root.current-page == 1: MusicLibraryPage { }
+            if root.current-page == 1: MusicLibraryPage {
+                dark-mode: root.dark-mode;
+            }
 
             if root.current-page == 2: AndroidAutoPage {
                 android-auto-frame: root.android-auto-frame;
@@ -177,7 +187,11 @@ export component AppWindow inherits Window {
             }
 
             if root.current-page == 3: SettingsPage {
+                dark-mode: root.dark-mode;
                 app-version: root.app-version;
+                toggle-dark-mode => {
+                    root.toggle-dark-mode();
+                }
                 shutdown => {
                     root.shutdown();
                 }

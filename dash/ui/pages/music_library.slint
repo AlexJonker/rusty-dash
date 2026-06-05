@@ -2,6 +2,7 @@ import { VerticalBox } from "std-widgets.slint";
 import { Button, HorizontalDivider } from "../custom-components.slint";
 
 export component MusicLibraryPage inherits VerticalLayout {
+    in-out property <bool> dark-mode: true;
     alignment: center;
 
     HorizontalLayout {
@@ -15,7 +16,7 @@ export component MusicLibraryPage inherits VerticalLayout {
                 text: "Music Library";
                 font-size: 24px;
                 font-weight: 700;
-                color: #ffffff;
+                color: root.dark-mode ? #ffffff : #000000;
             }
 
             HorizontalDivider { }
@@ -23,7 +24,7 @@ export component MusicLibraryPage inherits VerticalLayout {
             Text {
                 text: "Hello, World!";
                 font-size: 16px;
-                color: #b0b0b0;
+                color: root.dark-mode ? #b0b0b0 : #555555;
             }
         }
     }
