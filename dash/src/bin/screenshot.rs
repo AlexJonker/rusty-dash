@@ -20,8 +20,10 @@ impl Platform for MyPlatform {
 
 fn main() {
     let window = MinimalSoftwareWindow::new(RepaintBufferType::NewBuffer);
-    slint::platform::set_platform(Box::new(MyPlatform { window: window.clone() }))
-        .expect("platform already set");
+    slint::platform::set_platform(Box::new(MyPlatform {
+        window: window.clone(),
+    }))
+    .expect("platform already set");
 
     let ui = AppWindow::new().unwrap();
     ui.set_app_version(env!("CARGO_PKG_VERSION").into());
@@ -37,7 +39,9 @@ fn main() {
         window.window().request_redraw();
 
         buffer.fill(Rgb8Pixel { r: 0, g: 0, b: 0 });
-        window.draw_if_needed(|renderer| { renderer.render(&mut buffer, WIDTH as usize); });
+        window.draw_if_needed(|renderer| {
+            renderer.render(&mut buffer, WIDTH as usize);
+        });
 
         let pixels: Vec<u8> = buffer.iter().flat_map(|p| [p.r, p.g, p.b]).collect();
         let filepath = format!("../screenshots/{name}.png");

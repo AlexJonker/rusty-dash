@@ -34,11 +34,8 @@ impl MusicController {
             let _ui = ui_handle.unwrap();
         });
 
-        let ui_handle = ui.as_weak();
         ui.on_set_progress(move |progress| {
-            let ui = ui_handle.unwrap();
             let clamped = progress.clamp(0.0, 1.0);
-            ui.set_progress(clamped);
             println!("Set progress to {}", clamped);
         });
 

@@ -82,10 +82,13 @@ export component MusicPage inherits VerticalLayout {
                         TouchArea {
                             height: 500%; // Make it easier to click
                             moved => {
-                                root.set-progress(self.mouse-x / self.width);
+                                root.progress = max(0.0, min(1.0, self.mouse-x / self.width)); // Only move the slider visually
                             }
-                            clicked => {
-                                root.set-progress(self.mouse-x / self.width);
+                            pointer-event(event) => { // Not using clicked cuz that gives issues when dragging your cursor outside the TouchArea
+                                if (event.kind == PointerEventKind.up) {
+                                    root.progress = max(0.0, min(1.0, self.mouse-x / self.width)); // Move slider visually
+                                    root.set-progress(root.progress); // Set actual progress
+                                }
                             }
                         }
 
