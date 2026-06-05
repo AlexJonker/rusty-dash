@@ -265,6 +265,10 @@ jobs:
           prefix-key: "screenshots"
           workspaces: "dash -> target"
 
+      - name: Delete old screenshots
+        run: |
+          rm -rf ./screenshots/*
+
       - name: Generate screenshots
         run: |
           cd dash
