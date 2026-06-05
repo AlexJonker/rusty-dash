@@ -20,21 +20,43 @@ Root password is `root`
 User is called `driver` and password is `driver`
 
 ## Screenshots
-### Music
 
-<div>
-    <img src="./screenshots/music.png" alt="Music Page" width="400" />
-    <img src="./screenshots/library.png" alt="Music Library Page" width="400" />
-</div>
+<details>
+<summary>Music</summary>
 
-### Android Auto
+<p>
+  <img src="./screenshots/music_dark.png" width="48%" />
+  <img src="./screenshots/music_light.png" width="48%" />
+</p>
 
-<div>
-    <img src="./screenshots/android-auto.png" alt="Android Auto Page" width="400" />
-</div>
+</details>
 
-### Settings
+<details>
+<summary>Music Library</summary>
 
-<div>
-    <img src="./screenshots/settings.png" alt="Settings Page" width="400" />
-</div>
+<p>
+  <img src="./screenshots/library_dark.png" width="48%" />
+  <img src="./screenshots/library_light.png" width="48%" />
+</p>
+
+</details>
+
+<details>
+<summary>Android Auto</summary>
+
+<p>
+  <img src="./screenshots/android-auto_dark.png" width="48%" />
+  <img src="./screenshots/android-auto_light.png" width="48%" />
+</p>
+
+</details>
+
+<details>
+<summary>Settings</summary>
+
+<p>
+  <img src="./screenshots/settings_dark.png" width="48%" />
+  <img src="./screenshots/settings_light.png" width="48%" />
+</p>
+
+</details>

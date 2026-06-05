@@ -46,7 +46,7 @@ fn main() {
     let pages = ["music", "library", "android-auto", "settings"];
     let mut buffer = vec![Rgb8Pixel { r: 0, g: 0, b: 0 }; (WIDTH * HEIGHT) as usize];
 
-    for (page, name) in pages.iter().enumerate() {
+    let mut screenshot = |page: usize, name: &str, mode: &str| {
         ui.set_current_page(page as i32);
         window.window().request_redraw();
 
@@ -56,9 +56,20 @@ fn main() {
         });
 
         let pixels: Vec<u8> = buffer.iter().flat_map(|p| [p.r, p.g, p.b]).collect();
-        let filepath = format!("../screenshots/{name}.png");
+        let filepath = format!("../screenshots/{name}_{mode}.png");
 
         image::save_buffer(&filepath, &pixels, WIDTH, HEIGHT, image::ColorType::Rgb8).unwrap();
         println!("Saved {filepath}");
+    };
+
+    for (page, name) in pages.iter().enumerate() {
+        ui.set_dark_mode(true);
+        screenshot(page, name, "dark");
     }
+
+    for (page, name) in pages.iter().enumerate() {
+        ui.set_dark_mode(false);
+        screenshot(page, name, "light");
+    }
+
 }
