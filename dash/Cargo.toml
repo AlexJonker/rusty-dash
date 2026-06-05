@@ -1,6 +1,6 @@
 [package]
 name = "rusty-dash"
-version = "0.0.16"
+version = "0.0.17"
 edition = "2024"
 default-run = "rusty-dash"
 
