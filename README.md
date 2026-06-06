@@ -10,7 +10,7 @@
 
 ## Installation
 
-1. Download the latest image from [the release page](https://github.com/AlexJonker/miata-dash/releases/latest)
+1. Download the latest image from [the release page](https://github.com/AlexJonker/rusty-dash/releases/latest)
 2. Flash the downloaded file with raspberry pi imager.
 
 ## Information
