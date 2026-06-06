@@ -198,7 +198,7 @@ impl android_auto::AndroidAutoAudioInputTrait for AndroidAuto {
         if let Some(ai) = &s.audio_input {
             let android_send = s.android_send.clone();
             if let Ok(str) = ai.build_input_stream(
-                &config,
+                config,
                 move |data: &[i16], _| {
                     let bytes: Vec<u8> = data.iter().flat_map(|s| s.to_le_bytes()).collect();
                     let timestamp = std::time::SystemTime::now()
@@ -291,7 +291,7 @@ fn try_build_output_stream(
     let (producer, mut consumer) = ringbuf::traits::Split::split(rb);
     let stream = device
         .build_output_stream(
-            &cfg.config(),
+            cfg.config(),
             move |data: &mut [i16], _: &cpal::OutputCallbackInfo| {
                 let mut index = 0;
                 while index < data.len() {
