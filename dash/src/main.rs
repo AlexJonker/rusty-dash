@@ -9,7 +9,7 @@ mod settings;
 
 fn main() -> Result<(), Box<dyn Error>> {
     simple_logger::SimpleLogger::new()
-        .with_level(log::LevelFilter::Info)
+        .with_level(log::LevelFilter::Warn)
         .init()
         .ok();
     let ui = AppWindow::new()?;
