@@ -71,5 +71,4 @@ fn main() {
         ui.set_dark_mode(false);
         screenshot(page, name, "light");
     }
-
 }
