@@ -73,7 +73,7 @@ export component AppWindow inherits Window {
     callback shutdown();
     callback reboot();
     callback toggle-dark-mode();
-    callback handle_android_auto_touch(int, int, int);
+    callback handle-android-auto-touch(int, int, int);
 
     title: "Rusty Dash";
     // Hardcoded because this is the raspberry pi 7 inch touchscreen resolution
@@ -187,8 +187,8 @@ export component AppWindow inherits Window {
 
             if root.current-page == 2: AndroidAutoPage {
                 android-auto-frame: root.android-auto-frame;
-                handle_touch(x, y, action) => {
-                    root.handle_android_auto_touch(x, y, action);
+                handle-touch(x, y, action) => {
+                    root.handle-android-auto-touch(x, y, action);
                 }
             }
 

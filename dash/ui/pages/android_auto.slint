@@ -1,6 +1,6 @@
 export component AndroidAutoPage inherits Rectangle {
     in-out property <image> android-auto-frame;
-    callback handle_touch(int, int, int);
+    callback handle-touch(int, int, int);
     private property <bool> pressed: false;
 
     background: #000000;
@@ -33,20 +33,20 @@ export component AndroidAutoPage inherits Rectangle {
             if rx >= 0phx && rx < self.img-w && ry >= 0phx && ry < self.img-h {
                 if (details.kind == PointerEventKind.down) {
                     root.pressed = true;
-                    root.handle_touch(
+                    root.handle-touch(
                         (rx / 1px) * 800 / max(1, self.img-w / 1px),
                         (ry / 1px) * 480 / max(1, self.img-h / 1px),
                         5);
                 } else if (details.kind == PointerEventKind.move) {
                     if (root.pressed) {
-                        root.handle_touch(
+                        root.handle-touch(
                             (rx / 1px) * 800 / max(1, self.img-w / 1px),
                             (ry / 1px) * 480 / max(1, self.img-h / 1px),
                             2);
                     }
                 } else if (details.kind == PointerEventKind.up) {
                     root.pressed = false;
-                    root.handle_touch(
+                    root.handle-touch(
                         (rx / 1px) * 800 / max(1, self.img-w / 1px),
                         (ry / 1px) * 480 / max(1, self.img-h / 1px),
                         6);
