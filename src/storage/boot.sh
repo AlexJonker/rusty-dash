@@ -5,6 +5,7 @@
 source /storage/settings.conf
 export SLINT_BACKEND
 export SLINT_SCALE_FACTOR
+export ENABLE_WIRELESS
 
 if [ "$ENABLE_DASH" = "true" ]; then
     exec /usr/local/bin/rusty-dash # SLINT_BACKEND and SLINT_SCALE_FACTOR is set in settings.conf
