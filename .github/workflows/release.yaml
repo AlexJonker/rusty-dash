@@ -37,7 +37,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev
+          sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev libdbus-1-dev pkg-config
 
       - uses: Swatinem/rust-cache@master
         with:
@@ -71,7 +71,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev
+          sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev libdbus-1-dev pkg-config
 
       - uses: Swatinem/rust-cache@master
         with:
