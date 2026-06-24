@@ -1,5 +1,6 @@
 // Copied from https://github.com/uglyoldbob/android-auto/
 use android_auto::{AndroidAutoMainTrait, HeadUnitInfo, VideoConfiguration};
+use bluetooth_rust::MessageToBluetoothHost;
 use cpal::traits::{DeviceTrait, HostTrait, StreamTrait};
 use openh264::formats::YUVSource;
 use ringbuf::traits::Producer;
@@ -33,6 +34,9 @@ struct AndroidAutoInner {
 struct AndroidAuto {
     inner: Arc<Mutex<AndroidAutoInner>>,
     config: VideoConfiguration,
+    blue: Option<android_auto::BluetoothInformation>,
+    bluetooth: Option<Arc<bluetooth_rust::BluetoothAdapter>>,
+    network: Option<Arc<android_auto::NetworkInformation>>,
     sensors: android_auto::SensorInformation,
     input_config: android_auto::InputConfiguration,
 }
@@ -245,6 +249,38 @@ impl android_auto::AndroidAutoAudioInputTrait for AndroidAuto {
 impl android_auto::AndroidAutoWiredTrait for AndroidAuto {}
 
 #[async_trait::async_trait]
+impl android_auto::AndroidAutoWirelessTrait for AndroidAuto {
+    async fn setup_bluetooth_profile(
+        &self,
+        suggestions: &bluetooth_rust::BluetoothRfcommProfileSettings,
+    ) -> Result<bluetooth_rust::BluetoothRfcommProfile, String> {
+        match &self.bluetooth {
+            Some(bt) => bt.register_rfcomm_profile(suggestions.clone()).await,
+            None => Err("Bluetooth not available".to_string()),
+        }
+    }
+
+    fn get_wifi_details(&self) -> android_auto::NetworkInformation {
+        self.network
+            .as_ref()
+            .expect("get_wifi_details called without network info")
+            .as_ref()
+            .clone()
+    }
+}
+
+#[async_trait::async_trait]
+impl android_auto::AndroidAutoBluetoothTrait for AndroidAuto {
+    async fn do_stuff(&self) {}
+
+    fn get_config(&self) -> &android_auto::BluetoothInformation {
+        self.blue
+            .as_ref()
+            .expect("get_config called without bluetooth info")
+    }
+}
+
+#[async_trait::async_trait]
 impl android_auto::AndroidAutoMainTrait for AndroidAuto {
     async fn connect(&self) {
         let mut i = self.inner.lock().await;
@@ -265,6 +301,16 @@ impl android_auto::AndroidAutoMainTrait for AndroidAuto {
     ) -> Option<tokio::sync::mpsc::Receiver<android_auto::SendableAndroidAutoMessage>> {
         let mut s = self.inner.lock().await;
         s.arecv.take()
+    }
+
+    fn supports_bluetooth(&self) -> Option<&dyn android_auto::AndroidAutoBluetoothTrait> {
+        self.blue.as_ref()?;
+        Some(self)
+    }
+
+    fn supports_wireless(&self) -> Option<Arc<dyn android_auto::AndroidAutoWirelessTrait>> {
+        self.network.as_ref()?;
+        Some(Arc::new(self.clone()))
     }
 
     fn supports_wired(&self) -> Option<Arc<dyn android_auto::AndroidAutoWiredTrait>> {
@@ -313,6 +359,9 @@ impl AndroidAuto {
     fn new(
         mut recv: tokio::sync::mpsc::Receiver<MessageToAsync>,
         send: tokio::sync::mpsc::Sender<MessageFromAsync>,
+        bluetooth: Option<Arc<bluetooth_rust::BluetoothAdapter>>,
+        blue_address: Option<String>,
+        network: Option<android_auto::NetworkInformation>,
         android_recv: tokio::sync::mpsc::Receiver<android_auto::SendableAndroidAutoMessage>,
         android_send: tokio::sync::mpsc::Sender<android_auto::SendableAndroidAutoMessage>,
     ) -> Self {
@@ -356,6 +405,9 @@ impl AndroidAuto {
                 speech_stream,
                 input_stream: None,
             })),
+            bluetooth,
+            network: network.map(Arc::new),
+            blue: blue_address.map(|addr| android_auto::BluetoothInformation { address: addr }),
             config: VideoConfiguration {
                 resolution: android_auto::Wifi::video_resolution::Enum::_480p,
                 fps: android_auto::Wifi::video_fps::Enum::_30,
@@ -406,9 +458,99 @@ impl AndroidAutoContainer {
                 .build()
                 .expect("Failed to build Tokio runtime");
 
+            let wireless_enabled = std::env::var("ENABLE_WIRELESS")
+                .map(|v| v == "true" || v == "1")
+                .unwrap_or(false);
+
             let r = rt.block_on(async {
+                let (bluetooth, blue_address, network) = if wireless_enabled {
+                    let wifi = nmrs::NetworkManager::new().await.expect("WiFi not found");
+                    let wifi_dev = crate::wireless::get_wifi_interface(&wifi)
+                        .await
+                        .expect("No wifi device found");
+                    let hotspot_ssid = "Hotspot".to_string();
+                    let hotspot_psk = "qwertyuiop".to_string();
+                    crate::wireless::start_hotspot(
+                        hotspot_ssid.clone(),
+                        hotspot_psk.clone(),
+                        &wifi_dev.path,
+                    )
+                    .await
+                    .expect("Failed to start wifi hotspot");
+                    let (mut bluechan, bt_adapter) = {
+                        let bluechan = tokio::sync::mpsc::channel(5);
+                        let mut builder = bluetooth_rust::BluetoothAdapterBuilder::new();
+                        builder.with_sender(bluechan.0);
+                        let bt = Arc::new(builder.build().await.expect("Could not open bluetooth"));
+                        (bluechan.1, bt)
+                    };
+                    bt_adapter
+                        .set_discoverable(true)
+                        .await
+                        .expect("Failed to make bluetooth discoverable");
+                    tokio::spawn(async move {
+                        loop {
+                            if let Some(m) = bluechan.recv().await {
+                                match m {
+                                    MessageToBluetoothHost::DisplayPasskey(a, sender) => {
+                                        log::info!("Passkey is {}", a);
+                                        let _ = sender
+                                            .send(bluetooth_rust::ResponseToPasskey::Yes)
+                                            .await;
+                                    }
+                                    MessageToBluetoothHost::ConfirmPasskey(a, sender) => {
+                                        log::info!("Passkey is confirmed {}", a);
+                                        let _ = sender
+                                            .send(bluetooth_rust::ResponseToPasskey::Yes)
+                                            .await;
+                                    }
+                                    MessageToBluetoothHost::CancelDisplayPasskey => {
+                                        log::info!("Cancel show passkey");
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    let blue_addresses: Vec<bluetooth_rust::BluetoothAdapterAddress> =
+                        bt_adapter.addresses().await;
+                    let bt_address = blue_addresses
+                        .first()
+                        .map(|b| match b {
+                            bluetooth_rust::BluetoothAdapterAddress::String(s) => s.to_owned(),
+                            bluetooth_rust::BluetoothAdapterAddress::Byte(b) => {
+                                format!(
+                                    "{:02X}:{:02X}:{:02X}:{:02X}:{:02X}:{:02X}",
+                                    b[0], b[1], b[2], b[3], b[4], b[5]
+                                )
+                            }
+                        })
+                        .expect("No bluetooth hardware found");
+
+                    let net = android_auto::NetworkInformation {
+                        ssid: hotspot_ssid,
+                        psk: hotspot_psk,
+                        mac_addr: wifi_dev.identity.current_mac,
+                        ip: "10.42.0.1".to_string(),
+                        port: 5277,
+                        security_mode: android_auto::Bluetooth::SecurityMode::WPA2_PERSONAL,
+                        ap_type: android_auto::Bluetooth::AccessPointType::STATIC,
+                    };
+                    (Some(bt_adapter), Some(bt_address), Some(net))
+                } else {
+                    log::warn!("Wireless disabled by ENABLE_WIRELESS in /storage/settings.conf");
+                    (None, None, None)
+                };
+
                 let aauto = tokio::sync::mpsc::channel(50);
-                let aa = AndroidAuto::new(to_async.1, from_async.0, aauto.1, aauto.0);
+                let aa = AndroidAuto::new(
+                    to_async.1,
+                    from_async.0,
+                    bluetooth,
+                    blue_address,
+                    network,
+                    aauto.1,
+                    aauto.0,
+                );
                 let config = android_auto::AndroidAutoConfiguration {
                     unit: HeadUnitInfo {
                         name: "Miata".to_string(),

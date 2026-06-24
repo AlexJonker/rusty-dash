@@ -6,6 +6,7 @@ slint::include_modules!();
 mod android_auto;
 mod music;
 mod settings;
+mod wireless;
 
 fn main() -> Result<(), Box<dyn Error>> {
     simple_logger::SimpleLogger::new()
