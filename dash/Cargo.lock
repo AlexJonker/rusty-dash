@@ -4822,7 +4822,7 @@ checksum = "b39cdef0fa800fc44525c84ccb54a029961a8215f9619753635a9c0d2538d46d"
 
 [[package]]
 name = "rusty-dash"
-version = "0.0.19"
+version = "0.0.20"
 dependencies = [
  "android-auto",
  "async-trait",
