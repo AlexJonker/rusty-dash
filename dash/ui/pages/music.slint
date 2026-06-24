@@ -1,5 +1,3 @@
-import { Button, HorizontalDivider } from "../custom-components.slint";
-
 export component MusicPage inherits VerticalLayout {
     in-out property <bool> dark-mode: true;
 
@@ -10,9 +8,6 @@ export component MusicPage inherits VerticalLayout {
     in-out property <string> track-title;
     in-out property <string> artist-name;
     in-out property <string> album-name;
-
-    in-out property <string> next-track-title;
-    in-out property <string> next-track-artist;
 
     in-out property <float> progress;
     in-out property <string> current-time;
@@ -250,72 +245,6 @@ export component MusicPage inherits VerticalLayout {
                     width: 32px;
                     height: 32px;
                     colorize: root.is-loop-enabled ? #c20000 : root.dark-mode ? #ffffff : #555555;
-                }
-            }
-        }
-    }
-
-    HorizontalDivider { }
-
-    VerticalLayout {
-        spacing: 10px;
-
-        Text {
-            text: "Up Next";
-            font-size: 14px;
-            color: root.dark-mode ? #ffffff : #1a1a1a;
-            height: 20px;
-        }
-
-        Rectangle {
-            TouchArea {
-                width: 120%;
-                height: 200%;
-                clicked => {
-                    root.next-track();
-                }
-            }
-
-            HorizontalLayout {
-                spacing: 25px;
-
-                Rectangle {
-                    width: 60px;
-                    height: 60px;
-                    background: root.dark-mode ? #1e1e2e : #e0e0e0;
-                    border-radius: 12px;
-
-                    Image {
-                        source: @image-url("../../assets/icons/music.svg");
-                        width: parent.width * 0.4;
-                        height: parent.height * 0.4;
-                        colorize: root.dark-mode ? #ffffff : #555555;
-                    }
-                }
-
-                VerticalLayout {
-                    alignment: space-evenly;
-
-                    Text {
-                        text: root.next-track-title;
-                        font-size: 16px;
-                        font-weight: 700;
-                        color: root.dark-mode ? #ffffff : #1a1a1a;
-                    }
-
-                    Text {
-                        text: root.next-track-artist;
-                        font-size: 13px;
-                        color: root.dark-mode ? #b0b0b0 : #555555;
-                    }
-                }
-
-                Text {
-                    text: ">";
-                    font-size: 30px;
-                    color: root.dark-mode ? #b0b0b0 : #555555;
-                    vertical-alignment: center;
-                    horizontal-alignment: right;
                 }
             }
         }

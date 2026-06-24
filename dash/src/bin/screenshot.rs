@@ -34,9 +34,6 @@ fn main() {
     ui.set_album_name("Hybrid Theory".into());
     ui.set_track_title("Papercut".into());
 
-    ui.set_next_track_title("In the End".into());
-    ui.set_next_track_artist("Linkin Park".into());
-
     ui.set_total_time("3:05".into());
     ui.set_current_time("0:56".into());
     ui.set_progress(0.3);
