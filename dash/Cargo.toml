@@ -18,7 +18,7 @@ async-trait = "0.1.89"
 rodio = "0.22.2"
 image = "0.25.10"
 bluetooth-rust = { version = "0.4.1", features = ["async"] }
-nmrs = "3.2.1"
+nmrs = "3.3.0"
 zbus = "5.16.0"
 zvariant = "5.12.0"
 
