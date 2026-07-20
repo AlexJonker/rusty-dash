@@ -17,6 +17,7 @@ async-trait = "0.1.89"
 bluetooth-rust = { version = "0.4.1", features = ["async"] }
 cpal = "0.18.1"
 image = "0.25.10"
+lofty = "0.24.0"
 log = "0.4.33"
 nmrs = "3.3.0"
 openh264 = "0.9.3"
