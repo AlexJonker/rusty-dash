@@ -16,6 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let ui = AppWindow::new()?;
     let _android_auto = android_auto::AndroidAutoController::new(&ui);
     let _music = music::MusicController::new(&ui);
+    music::MusicController::play_music(&ui);
     let _settings = settings::SettingsController::new(&ui);
 
     ui.run()?;
