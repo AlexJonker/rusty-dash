@@ -38,6 +38,8 @@ fn main() {
     ui.set_current_time("0:56".into());
     ui.set_progress(0.3);
 
+    ui.set_is_playing(true);
+
     window.set_size(slint::PhysicalSize::new(WIDTH, HEIGHT));
 
     let pages = ["music", "library", "android-auto", "settings"];
