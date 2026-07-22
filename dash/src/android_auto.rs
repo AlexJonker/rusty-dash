@@ -471,9 +471,10 @@ impl AndroidAutoContainer {
                     let hotspot_ssid = "Hotspot".to_string();
                     let hotspot_psk = "qwertyuiop".to_string();
                     crate::wireless::start_hotspot(
-                        hotspot_ssid.clone(),
-                        hotspot_psk.clone(),
-                        &wifi_dev.path,
+                        &wifi,
+                        &hotspot_ssid,
+                        &hotspot_psk,
+                        &wifi_dev.interface,
                     )
                     .await
                     .expect("Failed to start wifi hotspot");
@@ -529,7 +530,7 @@ impl AndroidAutoContainer {
                     let net = android_auto::NetworkInformation {
                         ssid: hotspot_ssid,
                         psk: hotspot_psk,
-                        mac_addr: wifi_dev.identity.current_mac,
+                        mac_addr: wifi_dev.hw_address,
                         ip: "10.42.0.1".to_string(),
                         port: 5277,
                         security_mode: android_auto::Bluetooth::SecurityMode::WPA2_PERSONAL,
