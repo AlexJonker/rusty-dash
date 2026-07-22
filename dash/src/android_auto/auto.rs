@@ -132,7 +132,7 @@ impl android_auto::AndroidAutoAudioOutputTrait for AndroidAuto {
     async fn receive_output_audio(&self, t: android_auto::AudioChannelType, data: Vec<u8>) {
         let mut s = self.inner.lock().await;
         let r2: Vec<i16> = data
-            .chunks_exact(2)
+            .as_chunks::<2>().0.iter()
             .map(|v| i16::from_le_bytes([v[0], v[1]]))
             .collect();
         match t {
@@ -727,7 +727,7 @@ fn update_frame_from_video(
                 let (w, h) = image.dimensions_uv();
                 let (width, height) = (w * 2, h * 2);
                 let rgba: Vec<u8> = rgb_raw
-                    .chunks_exact(3)
+                    .as_chunks::<3>().0.iter()
                     .flat_map(|c| [c[0], c[1], c[2], 255])
                     .collect();
                 set_ui_frame_data(
