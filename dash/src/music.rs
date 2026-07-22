@@ -1,5 +1,6 @@
 use slint::ComponentHandle;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
 
@@ -35,11 +36,14 @@ fn format_time(secs: u64) -> String {
 pub struct MusicController;
 
 impl MusicController {
-    pub fn new(ui: &AppWindow) -> Self {
+    pub fn new(ui: &AppWindow, player: Arc<Player>) -> Self {
         let ui_handle = ui.as_weak();
+        let player_clone = player.clone();
         ui.on_play_pause(move || {
             let ui = ui_handle.unwrap();
-            ui.set_is_playing(!ui.get_is_playing());
+            let new_playing = !player_clone.is_playing();
+            player_clone.set_playing(new_playing);
+            ui.set_is_playing(new_playing);
         });
 
         let ui_handle = ui.as_weak();
@@ -72,11 +76,10 @@ impl MusicController {
         Self
     }
 
-    pub fn play_music(ui: &AppWindow) {
+    pub fn play_music(ui: &AppWindow, player: Arc<Player>) {
         let ui_weak = ui.as_weak();
 
         thread::spawn(move || {
-            let player = Player::new(None).unwrap();
             let paths = collect_paths("/storage/music");
 
             for path in &paths {
