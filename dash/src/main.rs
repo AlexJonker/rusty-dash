@@ -9,7 +9,6 @@ slint::include_modules!();
 mod android_auto;
 mod music;
 mod settings;
-mod wireless;
 
 fn main() -> Result<(), Box<dyn Error>> {
     simple_logger::SimpleLogger::new()
@@ -19,7 +18,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let ui = AppWindow::new()?;
     let player = Arc::new(Player::new(None).unwrap());
     player.set_playing(false);
-    let _android_auto = android_auto::AndroidAutoController::new(&ui);
+    let _android_auto = android_auto::auto::AndroidAutoController::new(&ui);
     let _music = music::MusicController::new(&ui, player.clone());
     music::MusicController::play_music(&ui, player);
     let _settings = settings::SettingsController::new(&ui);

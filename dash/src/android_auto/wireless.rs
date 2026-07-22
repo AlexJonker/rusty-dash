@@ -1,4 +1,3 @@
-
 //! Hotspot setup helpers.
 
 use nmrs::{

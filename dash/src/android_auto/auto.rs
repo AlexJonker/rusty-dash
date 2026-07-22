@@ -14,6 +14,7 @@ use std::{
 use tokio::sync::Mutex;
 
 use crate::AppWindow;
+use crate::android_auto::wireless;
 
 type AudioProducer = ringbuf::HeapProd<i16>;
 
@@ -465,12 +466,12 @@ impl AndroidAutoContainer {
             let r = rt.block_on(async {
                 let (bluetooth, blue_address, network) = if wireless_enabled {
                     let wifi = nmrs::NetworkManager::new().await.expect("WiFi not found");
-                    let wifi_dev = crate::wireless::get_wifi_interface(&wifi)
+                    let wifi_dev = wireless::get_wifi_interface(&wifi)
                         .await
                         .expect("No wifi device found");
                     let hotspot_ssid = "Hotspot".to_string();
                     let hotspot_psk = "qwertyuiop".to_string();
-                    crate::wireless::start_hotspot(
+                    wireless::start_hotspot(
                         &wifi,
                         &hotspot_ssid,
                         &hotspot_psk,
