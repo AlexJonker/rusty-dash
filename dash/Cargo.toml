@@ -6,7 +6,7 @@ default-run = "rusty-dash"
 
 [[bin]]
 name = "screenshot"
-path = "src/bin/screenshot.rs"
+path = "bin/screenshot.rs"
 
 [dependencies]
 android-auto = {
