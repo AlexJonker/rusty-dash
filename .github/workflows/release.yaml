@@ -105,11 +105,7 @@ jobs:
 
       - name: Copy custom files into rootfs
         run: |
-          sudo mkdir -p rootfs/usr/local/bin
           sudo cp -r ./src/. rootfs/
-          sudo cp rusty-dash-arm64 rootfs/usr/local/bin/rusty-dash
-          sudo chown root:root rootfs/usr/local/bin/rusty-dash
-          sudo chmod 755 rootfs/usr/local/bin/rusty-dash
 
       - name: Calculate image size
         id: imgsize
