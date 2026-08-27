@@ -51,6 +51,7 @@ jobs:
 
       - name: Bind-mount pseudo-filesystems for chroot
         run: |
+          sudo mount --bind rootfs rootfs
           sudo mount --bind /proc rootfs/proc
           sudo mount --bind /dev rootfs/dev
           sudo mount --bind /dev/pts rootfs/dev/pts
@@ -100,6 +101,7 @@ jobs:
           sudo umount -R rootfs/dev || true
           sudo umount -R rootfs/proc || true
           sudo umount -R rootfs/sys || true
+          sudo umount rootfs || true
 
       - name: Copy custom files into rootfs
         run: |
