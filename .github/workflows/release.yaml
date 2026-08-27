@@ -147,10 +147,6 @@ jobs:
         run: |
           sudo cp -a rootfs/. mnt/root/
 
-      - name: Move boot files onto boot partition
-        run: |
-          sudo mv mnt/root/boot/* mnt/root/boot/
-
       - name: Unmount partitions
         run: |
           sudo umount mnt/root/boot
