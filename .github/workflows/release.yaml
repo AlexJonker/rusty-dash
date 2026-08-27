@@ -2,228 +2,149 @@ name: Build and Release
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 1.0.0)'
+        required: true
+        type: string
 
 permissions:
   contents: write
   actions: read
 
 jobs:
-  get-version:
-    name: Get Version
-    runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.get_version.outputs.version }}
-
-    steps:
-      - name: Checkout dash
-        uses: actions/checkout@main
-        with:
-          ref: "main"
-
-      - name: Get version
-        id: get_version
-        run: echo "version=$(grep '^version' dash/Cargo.toml | head -1 | sed 's/version = "\(.*\)"/\1/')" >> $GITHUB_OUTPUT
-
-  compile-arm64:
-    name: Compile Dashboard arm64
-    runs-on: ubuntu-24.04-arm
-
-    steps:
-      - name: Checkout dash
-        uses: actions/checkout@main
-        with:
-          ref: "main"
-
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev libdbus-1-dev pkg-config
-
-      - uses: Swatinem/rust-cache@master
-        with:
-          prefix-key: "arm64-build"
-          workspaces: "dash -> target"
-
-      - name: Build dashboard
-        run: |
-          cd dash
-          cargo build --release
-
-      - name: Compress binary
-        run: xz -c dash/target/release/rusty-dash > rusty-dash-arm64.xz
-
-      - name: Upload binary
-        uses: actions/upload-artifact@main
-        with:
-          name: rusty-dash-binary-arm64
-          path: rusty-dash-arm64.xz
-
-  compile-amd64:
-    name: Compile Dashboard amd64
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout dash
-        uses: actions/checkout@main
-        with:
-          ref: "main"
-
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev libdbus-1-dev pkg-config
-
-      - uses: Swatinem/rust-cache@master
-        with:
-          prefix-key: "amd64-build"
-          workspaces: "dash -> target"
-
-      - name: Build dashboard
-        run: |
-          cd dash
-          cargo build --release
-
-      - name: Compress binary
-        run: xz -c dash/target/release/rusty-dash > rusty-dash-amd64.xz
-
-      - name: Upload binary
-        uses: actions/upload-artifact@main
-        with:
-          name: rusty-dash-binary-amd64
-          path: rusty-dash-amd64.xz
-
-  release-binary:
-    name: Release Binaries
-    needs: [get-version, compile-arm64, compile-amd64]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@main
-        with:
-          ref: "main"
-
-      - uses: actions/download-artifact@main
-        with:
-          name: rusty-dash-binary-arm64
-
-      - uses: actions/download-artifact@main
-        with:
-          name: rusty-dash-binary-amd64
-
-      - name: Release dash binary
-        uses: softprops/action-gh-release@master
-        with:
-          tag_name: ${{ format('v{0}', needs.get-version.outputs.version) }}
-          name: ${{ format('v{0}', needs.get-version.outputs.version) }}
-          generate_release_notes: true
-          files: |
-            rusty-dash-arm64.xz
-            rusty-dash-amd64.xz
-
   build-pi-image:
-    name: Build RPi Image
+    name: Build ALARM Image (Pi 3)
     runs-on: ubuntu-24.04-arm
-    needs: [get-version, compile-arm64]
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
 
-      - name: Download binary
-        uses: actions/download-artifact@main
-        with:
-          name: rusty-dash-binary-arm64
-
-      - name: Decompress binary
-        run: xz -d rusty-dash-arm64.xz
-
-      - name: Create custom stage
+      - name: Install build dependencies
         run: |
-          mkdir -p custom-stage/01-customization/files/usr/local/bin
+          sudo apt-get update
+          sudo apt-get install -y wget parted dosfstools e2fsprogs zip
 
-          cp -r ./src/. custom-stage/01-customization/files/
-          cp rusty-dash-arm64 custom-stage/01-customization/files/usr/local/bin/rusty-dash
+      - name: Download ALARM rootfs (Pi 3, aarch64)
+        run: |
+          wget -q http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
 
-          cat > custom-stage/01-customization/00-run.sh <<-'EOF'
+      - name: Prepare rootfs extraction dir
+        run: |
+          mkdir -p rootfs
+          sudo tar -xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C rootfs --numeric-owner
+
+      - name: Bind-mount pseudo-filesystems for chroot
+        run: |
+          sudo mount --bind /proc rootfs/proc
+          sudo mount --bind /dev rootfs/dev
+          sudo mount --bind /dev/pts rootfs/dev/pts
+          sudo mount --bind /sys rootfs/sys
+
+      - name: Write chroot package-install script
+        run: |
+          cat > chroot-run.sh <<-'EOF'
           #!/bin/bash -e
-          cp -rp files/* "${ROOTFS_DIR}/"
-          EOF
 
-          cat > custom-stage/01-customization/00-run-chroot.sh <<-'EOF'
-          #!/bin/bash -e
-          apt-get update
-          apt-get install -y --no-install-recommends libfontconfig1 libgbm1 libxkbcommon0 libudev1 libseat1 libinput10
+          pacman-key --init
+          pacman-key --populate archlinuxarm
+          pacman -Syu --noconfirm
 
-          chown root:root /usr/local/bin/rusty-dash
-          chmod 755 /usr/local/bin/rusty-dash
-          echo "root:root" | chpasswd
+          pacman -S --noconfirm --needed \
+            fastfetch
 
           mkdir -p /storage/music
           chmod -R 777 /storage
 
-          systemctl enable startup.service
-          systemctl disable getty@tty1.service
           EOF
+          chmod +x chroot-run.sh
 
-          cat > custom-stage/prerun.sh <<-'EOF'
-          #!/bin/bash -e
-          if [ ! -d "${ROOTFS_DIR}" ]; then
-            copy_previous
-          fi
-          EOF
+      - name: Run chroot package installation
+        run: |
+          sudo cp chroot-run.sh rootfs/root/chroot-run.sh
+          sudo chroot rootfs /root/chroot-run.sh
+          sudo rm -f rootfs/root/chroot-run.sh
 
-          chmod +x custom-stage/prerun.sh
-          chmod +x custom-stage/01-customization/00-run.sh
-          chmod +x custom-stage/01-customization/00-run-chroot.sh
+      - name: Unmount pseudo-filesystems
+        if: always()
+        run: |
+          sudo umount -R rootfs/dev/pts || true
+          sudo umount -R rootfs/dev || true
+          sudo umount -R rootfs/proc || true
+          sudo umount -R rootfs/sys || true
 
-      - uses: usimd/pi-gen-action@v1
-        id: build
-        with:
-          apt-proxy: ""
-          compression: xz
-          compression-level: 6
-          disable-first-boot-user-rename: 1
-          docker-opts: ""
-          enable-cloud-init: 0
-          enable-noobs: false
-          enable-ssh: 1
-          export-last-stage-only: true
-          extra-host-dependencies: ""
-          extra-host-modules: ""
-          github-token: ${{ github.token }}
-          hostname: shitbox
-          image-name: "rusty-dash-${{ needs.get-version.outputs.version }}-arm64"
-          increase-runner-disk-size: false
-          keyboard-keymap: us
-          keyboard-layout: English (US)
-          locale: en_US.UTF-8
-          password: "driver"
-          pi-gen-dir: pi-gen
-          pi-gen-release: Raspberry Pi reference
-          pi-gen-repository: RPi-Distro/pi-gen
-          pi-gen-version: arm64
-          pubkey-only-ssh: 0
-          pubkey-ssh-first-user: ""
-          release: trixie
-          setfcap: ""
-          stage-list: stage0 stage1 stage2 ./custom-stage
-          # enable-pigen-cache: true  # Uncomment when new pi-gen-action version is released
-          temp-repo: ""
-          timezone: Europe/Brussels
-          username: driver
-          verbose-output: false
-          wpa-country: ""
-          wpa-essid: ""
-          wpa-password: ""
+      - name: Copy custom files into rootfs
+        run: |
+          sudo mkdir -p rootfs/usr/local/bin
+          sudo cp -r ./src/. rootfs/
+          sudo cp rusty-dash-arm64 rootfs/usr/local/bin/rusty-dash
+          sudo chown root:root rootfs/usr/local/bin/rusty-dash
+          sudo chmod 755 rootfs/usr/local/bin/rusty-dash
+
+      - name: Calculate image size
+        id: imgsize
+        run: |
+          ROOTFS_KB=$(sudo du -sk rootfs | cut -f1)
+          # rootfs size + 512MB boot partition + 512MB headroom, in MB
+          IMG_MB=$(( (ROOTFS_KB / 1024) + 512 + 512 ))
+          echo "img_mb=${IMG_MB}" >> "$GITHUB_OUTPUT"
+
+      - name: Create image file
+        run: |
+          IMG_NAME="rusty-dash-${{ inputs.version }}-arm64.img"
+          fallocate -l "${{ steps.imgsize.outputs.img_mb }}M" "$IMG_NAME"
+
+          parted -s "$IMG_NAME" mklabel msdos
+          parted -s "$IMG_NAME" mkpart primary fat32 1MiB 513MiB
+          parted -s "$IMG_NAME" mkpart primary ext4 513MiB 100%
+
+          echo "IMG_NAME=$IMG_NAME" >> $GITHUB_ENV
+
+      - name: Attach loop device
+        run: |
+          LOOPDEV=$(sudo losetup --show -fP "$IMG_NAME")
+          echo "LOOPDEV=$LOOPDEV" >> $GITHUB_ENV
+
+      - name: Format partitions
+        run: |
+          sudo mkfs.vfat -F32 "${LOOPDEV}p1"
+          sudo mkfs.ext4 -F "${LOOPDEV}p2"
+
+      - name: Mount partitions
+        run: |
+          mkdir -p mnt/root
+          sudo mount "${LOOPDEV}p2" mnt/root
+          sudo mkdir -p mnt/root/boot
+          sudo mount "${LOOPDEV}p1" mnt/root/boot
+
+      - name: Copy rootfs into root partition
+        run: |
+          sudo cp -a rootfs/. mnt/root/
+
+      - name: Move boot files onto boot partition
+        run: |
+          sudo mv mnt/root/boot/* mnt/root/boot/
+
+      - name: Unmount partitions
+        run: |
+          sudo umount mnt/root/boot
+          sudo umount mnt/root
+
+      - name: Detach loop device
+        run: sudo losetup -d "$LOOPDEV"
+
+      - name: Compress image
+        run: xz -T0 -6 "$IMG_NAME"
 
       - uses: actions/upload-artifact@main
         with:
           name: rusty-dash-image
-          path: ${{ steps.build.outputs.image-path }}
+          path: ${{ env.IMG_NAME }}.xz
 
   release-image:
-    name: Release RPi Image
-    needs: [get-version, build-pi-image]
+    name: Release Image
+    needs: [build-pi-image]
     runs-on: ubuntu-latest
 
     steps:
@@ -238,44 +159,8 @@ jobs:
       - name: Release arm64 image
         uses: softprops/action-gh-release@master
         with:
-          tag_name: ${{ format('v{0}', needs.get-version.outputs.version) }}
-          name: ${{ format('v{0}', needs.get-version.outputs.version) }}
+          tag_name: ${{ format('v{0}', inputs.version) }}
+          name: ${{ format('v{0}', inputs.version) }}
           overwrite_files: true
           files: |
-            image*.img.xz
-
-  update-screenshots:
-    name: Update Screenshots
-    runs-on: ubuntu-latest
-    needs: [get-version, release-image]
-
-    steps:
-      - name: Checkout dash
-        uses: actions/checkout@main
-        with:
-          ref: "main"
-
-      - name: Install build dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libasound2-dev libfontconfig1-dev protobuf-compiler libgbm-dev libxkbcommon-dev libudev-dev libseat-dev libinput-dev libdbus-1-dev pkg-config
-
-      - uses: Swatinem/rust-cache@master
-        with:
-          prefix-key: "screenshots"
-          workspaces: "dash -> target"
-
-      - name: Delete old screenshots
-        run: |
-          rm -rf ./screenshots/*
-
-      - name: Generate screenshots
-        run: |
-          cd dash
-          cargo run --profile screenshot --bin screenshot
-
-      - name: Commit screenshots
-        run: |
-          git config user.name "Rusty Dash"
-          git add -A
-          git diff --staged --quiet || (git commit -m "Update screenshots for release v${{ needs.get-version.outputs.version }}" && git push)
+            *.img.xz

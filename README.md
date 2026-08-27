@@ -19,7 +19,7 @@ Root password is `root`
 
 User is called `driver` and password is `driver`
 
-## Screenshots
+<!-- ## Screenshots
 
 <details>
 <summary>Music</summary>
@@ -59,4 +59,4 @@ User is called `driver` and password is `driver`
   <img src="./screenshots/settings_light.png" width="48%" />
 </p>
 
-</details>
+</details> -->
