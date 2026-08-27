@@ -60,6 +60,14 @@ jobs:
           EOF
           chmod +x chroot-run.sh
 
+      - name: Fix dns
+        run: |
+          sudo rm -f rootfs/etc/resolv.conf
+          cat <<-'EOF' | sudo tee rootfs/etc/resolv.conf > /dev/null
+          nameserver 1.1.1.1
+          nameserver 8.8.8.8
+          EOF
+
       - name: Run chroot package installation
         run: |
           sudo cp chroot-run.sh rootfs/root/chroot-run.sh
