@@ -19,10 +19,13 @@ sudo -u builder bash -c '
   makepkg -si --noconfirm
   cd ~
 
-  paru -S --noconfirm --needed fastfetch exfatprogs quickshell
-
-  paru -S --noconfirm --needed --mflags "--ignorearch" mangowm
-
+  paru -S --noconfirm --needed \
+    fastfetch \
+    exfatprogs \
+    labwc \
+    quickshell \
+    swaybg \
+    foot
 
   # Clean system
   paru -Rns $(paru -Qtdq) --noconfirm
