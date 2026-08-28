@@ -11,7 +11,7 @@ pacman -S --noconfirm --needed git rust base-devel
 useradd -m builder
 echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-# Bootstrap paru (as builder, not root)
+# Install stuff
 sudo -u builder bash -c '
   cd ~
   git clone https://aur.archlinux.org/paru.git
