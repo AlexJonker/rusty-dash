@@ -23,13 +23,17 @@ sudo -u builder bash -c '
   paru -S --noconfirm --needed fastfetch exfatprogs quickshell
 
   paru -S --noconfirm --needed --mflags "--ignorearch" mangowm
+
+
+  # Clean system
+  paru -Rns (paru -Qtdq) --noconfirm
+  paru -Sccd --noconfirm
+  rm -rf ~/.cache/*
 '
 
 # Clean up the temporary build user and its sudo grant
 userdel -r builder
 sed -i '/builder ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers
-
-pacman -Scc --noconfirm
 
 # mkdir -p /storage/music
 # chmod -R 777 /storage
