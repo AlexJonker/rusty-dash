@@ -17,16 +17,13 @@ sudo -u builder bash -c '
   git clone https://aur.archlinux.org/paru.git
   cd paru
   makepkg -si --noconfirm
+  cd ..
+  rm -fr paru
+
+  paru -S --noconfirm --needed fastfetch exfatprogs quickshell
+
+  paru -S --noconfirm --needed --mflags "--ignorearch" mangowm
 '
-rm -rf /home/builder/paru
-
-# Install AUR packages via paru (as builder, not root)
-sudo -u builder paru -S --noconfirm --needed \
-  fastfetch \
-  exfatprogs \
-  quickshell
-
-sudo -u builder paru -S --noconfirm --needed --mflags "--ignorearch" mangowm
 
 # Clean up the temporary build user and its sudo grant
 userdel -r builder
