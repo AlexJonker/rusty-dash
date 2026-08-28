@@ -89,8 +89,9 @@ jobs:
           sudo -u builder paru -S --noconfirm --needed \
             fastfetch \
             exfatprogs \
-            mangowm \
             quickshell
+
+          sudo -u builder paru -S --noconfirm --needed --mflags "--ignorearch" mangowm
 
           # Clean up the temporary build user and its sudo grant
           userdel -r builder
