@@ -17,7 +17,7 @@
 
 Root password is `root`
 
-User is called `driver` and password is `driver`
+User is called `alarm` and password is `alarm`
 
 <!-- ## Screenshots
 
