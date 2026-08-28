@@ -26,9 +26,8 @@ sudo -u builder bash -c '
 
 
   # Clean system
-  paru -Rns (paru -Qtdq) --noconfirm
+  paru -Rns $(paru -Qtdq) --noconfirm
   paru -Sccd --noconfirm
-  rm -rf ~/.cache/*
 '
 
 # Clean up the temporary build user and its sudo grant
