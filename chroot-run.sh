@@ -13,12 +13,11 @@ echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 # Bootstrap paru (as builder, not root)
 sudo -u builder bash -c '
-  cd /home/builder
+  cd ~
   git clone https://aur.archlinux.org/paru.git
   cd paru
   makepkg -si --noconfirm
-  cd ..
-  rm -fr paru
+  cd ~
 
   paru -S --noconfirm --needed fastfetch exfatprogs quickshell
 
