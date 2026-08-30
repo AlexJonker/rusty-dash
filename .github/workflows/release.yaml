@@ -90,7 +90,7 @@ jobs:
 
       - name: Create image file
         run: |
-          IMG_NAME="rusty-dash-${{ inputs.version }}-arm64.img"
+          IMG_NAME="nowa-${{ inputs.version }}-arm64.img"
           fallocate -l "${{ steps.imgsize.outputs.img_mb }}M" "$IMG_NAME"
 
           parted -s "$IMG_NAME" mklabel msdos
@@ -140,7 +140,7 @@ jobs:
 
       - uses: actions/upload-artifact@main
         with:
-          name: rusty-dash-image
+          name: nowa-image
           path: ${{ env.IMG_NAME }}.xz
 
   release-image:
@@ -155,7 +155,7 @@ jobs:
 
       - uses: actions/download-artifact@main
         with:
-          name: rusty-dash-image
+          name: nowa-image
 
       - name: Release arm64 image
         uses: softprops/action-gh-release@master

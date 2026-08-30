@@ -1,16 +1,14 @@
 <div align="center">
   <!-- <img src="./assets/icon.png" alt="logo" width="150" /> -->
   <br>
-  <strong>Rusty Dash</strong>
+  <strong>nowa</strong>
   <br><br>
-  A full linux based headunit system for in my miata.
-  <br>
-  I am running this on a pi3 with a 7 inch touchscreen.
+  A little computer for your little car.
 </div>
 
 ## Installation
 
-1. Download the latest image from [the release page](https://github.com/AlexJonker/rusty-dash/releases/latest)
+1. Download the latest image from [the release page](https://github.com/nowa-dash/nowa/releases/latest)
 2. Flash the downloaded file with raspberry pi imager.
 
 ## Information
