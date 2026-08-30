@@ -25,7 +25,8 @@ sudo -u builder bash -c '
     labwc \
     quickshell \
     swaybg \
-    foot
+    foot \
+    android-udev
 
   # Clean system
   paru -Rns $(paru -Qtdq) --noconfirm
