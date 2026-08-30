@@ -9,7 +9,7 @@ pacman -S --noconfirm --needed git rust base-devel
 
 # makepkg refuses to run as root, create a temporary build user with passwordless sudo
 useradd -m builder
-echo "builder ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder
 
 # Install stuff
 sudo -u builder bash -c '
@@ -35,9 +35,12 @@ sudo -u builder bash -c '
 
 # Clean up the temporary build user and its sudo grant
 userdel -r builder
-sed -i '/builder ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers
+rm /etc/sudoers.d/builder
 
 systemctl enable NetworkManager
+
+# Fix home dir permissions
+chown -R alarm:alarm /home/alarm
 
 # mkdir -p /storage/music
 # chmod -R 777 /storage

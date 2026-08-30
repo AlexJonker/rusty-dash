@@ -61,13 +61,9 @@ jobs:
       - name: Check disk space
         run: df -h
 
-      - name: Fix dns
+      - name: Copy custom files into rootfs
         run: |
-          sudo rm -f rootfs/etc/resolv.conf
-          cat <<-'EOF' | sudo tee rootfs/etc/resolv.conf > /dev/null
-          nameserver 1.1.1.1
-          nameserver 8.8.8.8
-          EOF
+          sudo cp -r ./src/. rootfs/
 
       - name: Run chroot package installation
         run: |
@@ -83,10 +79,6 @@ jobs:
           sudo umount -R rootfs/proc || true
           sudo umount -R rootfs/sys || true
           sudo umount rootfs || true
-
-      - name: Copy custom files into rootfs
-        run: |
-          sudo cp -r ./src/. rootfs/
 
       - name: Calculate image size
         id: imgsize
