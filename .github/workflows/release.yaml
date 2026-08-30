@@ -63,7 +63,7 @@ jobs:
 
       - name: Copy custom files into rootfs
         run: |
-          sudo cp -r ./src/. rootfs/
+          sudo cp -r --remove-destination ./src/. rootfs/
 
       - name: Run chroot package installation
         run: |
