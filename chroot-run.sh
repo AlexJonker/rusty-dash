@@ -22,6 +22,7 @@ sudo -u builder bash -c '
   paru -S --noconfirm --needed \
     fastfetch \
     exfatprogs \
+    networkmanager \
     labwc \
     quickshell \
     swaybg \
@@ -35,6 +36,8 @@ sudo -u builder bash -c '
 # Clean up the temporary build user and its sudo grant
 userdel -r builder
 sed -i '/builder ALL=(ALL) NOPASSWD: ALL/d' /etc/sudoers
+
+systemctl enable NetworkManager
 
 # mkdir -p /storage/music
 # chmod -R 777 /storage
