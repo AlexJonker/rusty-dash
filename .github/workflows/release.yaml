@@ -117,6 +117,13 @@ jobs:
           sudo mkfs.vfat -F32 "${LOOPDEV}p1"
           sudo mkfs.ext4 -F "${LOOPDEV}p2"
 
+      - name: Fix fstab to use boot partition UUID
+        run: |
+          BOOT_UUID=$(sudo blkid -s UUID -o value "${LOOPDEV}p1")
+          echo "Boot partition UUID: $BOOT_UUID"
+          sudo sed -i "s#^/dev/mmcblk0p1.*#UUID=${BOOT_UUID}  /boot  vfat  defaults  0  0#" rootfs/etc/fstab
+          cat rootfs/etc/fstab
+
       - name: Mount partitions
         run: |
           mkdir -p mnt/root
