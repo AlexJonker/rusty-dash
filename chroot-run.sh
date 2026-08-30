@@ -20,7 +20,6 @@ sudo -u builder bash -c '
   cd ~
 
   paru -S --noconfirm --needed \
-    fastfetch \
     exfatprogs \
     networkmanager \
     labwc \
@@ -41,6 +40,9 @@ systemctl enable NetworkManager
 
 # Fix home dir permissions
 chown -R alarm:alarm /home/alarm
+
+# Generate en_US.UTF-8 locale
+locale-gen
 
 # mkdir -p /storage/music
 # chmod -R 777 /storage
