@@ -1,0 +1,2 @@
+# Give all users in wheel group sudo access
+%wheel ALL=(ALL:ALL) ALL
