@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@main
+        with:
+          submodules: recursive
 
       - name: Check disk space
         run: df -h
