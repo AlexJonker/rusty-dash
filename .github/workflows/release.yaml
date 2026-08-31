@@ -203,24 +203,10 @@ jobs:
           ls -lh "${IMG_NAME}.xz"
           du -h "${IMG_NAME}.xz"
 
-      - uses: actions/upload-artifact@main
-        with:
-          name: nowa-image
-          path: ${{ env.IMG_NAME }}.xz
-
-  release-image:
-    name: Release Image
-    needs: [build-pi-image]
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@main
-        with:
-          ref: "main"
-
-      - uses: actions/download-artifact@main
-        with:
-          name: nowa-image
+      # - uses: actions/upload-artifact@main
+      #   with:
+      #     name: nowa-image
+      #     path: ${{ env.IMG_NAME }}.xz
 
       - name: Release arm64 image
         uses: softprops/action-gh-release@master
@@ -229,4 +215,28 @@ jobs:
           name: ${{ format('v{0}', inputs.version) }}
           overwrite_files: true
           files: |
-            *.img.xz
+            ${{ env.IMG_NAME }}.xz
+
+
+  # release-image:
+  #   name: Release Image
+  #   needs: [build-pi-image]
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@main
+  #       with:
+  #         ref: "main"
+
+  #     - uses: actions/download-artifact@main
+  #       with:
+  #         name: nowa-image
+
+  #     - name: Release arm64 image
+  #       uses: softprops/action-gh-release@master
+  #       with:
+  #         tag_name: ${{ format('v{0}', inputs.version) }}
+  #         name: ${{ format('v{0}', inputs.version) }}
+  #         overwrite_files: true
+  #         files: |
+  #           *.img.xz
