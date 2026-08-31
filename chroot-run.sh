@@ -95,7 +95,7 @@ fi
 rm -rf "$BUILD_DIR" "$ANDROID_AUTO_SRC"
 
 sudo -u builder bash -c '
-  paru -Rns --noconfirm git rust cmake base-devel ninja
+  paru -Rns --noconfirm git rust cmake base-devel ninja boost
   paru -Rns --noconfirm $(paru -Qtdq) || true
   paru -Sccd --noconfirm
 '
