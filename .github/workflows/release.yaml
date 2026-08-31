@@ -196,7 +196,7 @@ jobs:
 
       - name: Compress image
         run: |
-          xz -9e "$IMG_NAME"
+          xz -T0 -9 "$IMG_NAME"
 
       - name: Show compressed image size
         run: |
