@@ -1,6 +1,6 @@
 [submodule "android-auto/aasdk"]
 	path = android-auto/aasdk
-	url = https://github.com/nowa-dash/aasdk.git
+	url = https://github.com/nowa-dash/aasdk
 [submodule "android-auto/openauto"]
 	path = android-auto/openauto
-	url = https://github.com/nowa-dash/openauto.git
+	url = https://github.com/nowa-dash/openauto
