@@ -26,7 +26,7 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y wget parted dosfstools e2fsprogs zip
+          sudo apt-get install -y wget parted dosfstools e2fsprogs xz-utils
 
       - name: Download ALARM rootfs (Pi 3, aarch64)
         run: |
@@ -57,6 +57,17 @@ jobs:
           sudo chroot rootfs /root/chroot-run.sh
           sudo rm -f rootfs/root/chroot-run.sh
 
+      - name: Clean rootfs
+        run: |
+          sudo rm -rf rootfs/var/cache/pacman/pkg/*
+          sudo rm -rf rootfs/root/.cache
+          sudo rm -rf rootfs/tmp/*
+          sudo rm -rf rootfs/var/tmp/*
+          sudo rm -f rootfs/etc/machine-id
+          sudo rm -f rootfs/var/lib/systemd/random-seed
+          sudo find rootfs/var/log -type f -delete
+          sudo find rootfs/home -type d -name .cache -prune -exec rm -rf {} + 2>/dev/null || true
+
       - name: Unmount pseudo-filesystems
         if: always()
         run: |
@@ -66,29 +77,24 @@ jobs:
           sudo umount -R rootfs/sys || true
           sudo umount rootfs || true
 
-      - name: Calculate image size
-        id: imgsize
-        run: |
-          ROOTFS_KB=$(sudo du -sk rootfs | cut -f1)
-          # rootfs size + 512MB boot partition + 512MB headroom, in MB
-          IMG_MB=$(( (ROOTFS_KB / 1024) + 512 + 512 ))
-          echo "img_mb=${IMG_MB}" >> "$GITHUB_OUTPUT"
-
-      - name: Create image file
+      - name: Create temporary image
         run: |
           IMG_NAME="nowa-${{ inputs.version }}-arm64.img"
-          fallocate -l "${{ steps.imgsize.outputs.img_mb }}M" "$IMG_NAME"
+
+          # Large sparse image used only during construction.
+          # It is shrunk to the actual filesystem size later.
+          truncate -s 8G "$IMG_NAME"
 
           parted -s "$IMG_NAME" mklabel msdos
-          parted -s "$IMG_NAME" mkpart primary fat32 1MiB 513MiB
-          parted -s "$IMG_NAME" mkpart primary ext4 513MiB 100%
+          parted -s "$IMG_NAME" mkpart primary fat32 1MiB 257MiB
+          parted -s "$IMG_NAME" mkpart primary ext4 257MiB 100%
 
-          echo "IMG_NAME=$IMG_NAME" >> $GITHUB_ENV
+          echo "IMG_NAME=$IMG_NAME" >> "$GITHUB_ENV"
 
       - name: Attach loop device
         run: |
           LOOPDEV=$(sudo losetup --show -fP "$IMG_NAME")
-          echo "LOOPDEV=$LOOPDEV" >> $GITHUB_ENV
+          echo "LOOPDEV=$LOOPDEV" >> "$GITHUB_ENV"
 
       - name: Format partitions
         run: |
@@ -112,17 +118,90 @@ jobs:
       - name: Copy rootfs into root partition
         run: |
           sudo cp -a rootfs/. mnt/root/
+          sync
 
       - name: Unmount partitions
         run: |
           sudo umount mnt/root/boot
           sudo umount mnt/root
 
+      - name: Check and minimize ext4 filesystem
+        run: |
+          sudo e2fsck -fy "${LOOPDEV}p2"
+          sudo resize2fs -M "${LOOPDEV}p2"
+
+      - name: Calculate minimized filesystem size
+        id: fs_size
+        run: |
+          BLOCK_COUNT=$(sudo dumpe2fs -h "${LOOPDEV}p2" 2>/dev/null | awk '/Block count:/ {print $3}')
+          BLOCK_SIZE=$(sudo dumpe2fs -h "${LOOPDEV}p2" 2>/dev/null | awk '/Block size:/ {print $3}')
+
+          FS_BYTES=$((BLOCK_COUNT * BLOCK_SIZE))
+          FS_MB=$(( (FS_BYTES + 1048575) / 1048576 ))
+
+          # Add 8 MiB safety margin.
+          ROOT_PARTITION_MB=$((FS_MB + 8))
+          ROOT_END_MB=$((257 + ROOT_PARTITION_MB))
+
+          echo "Filesystem size: ${FS_MB} MiB"
+          echo "Root partition size: ${ROOT_PARTITION_MB} MiB"
+          echo "Root partition end: ${ROOT_END_MB} MiB"
+
+          echo "root_end_mb=${ROOT_END_MB}" >> "$GITHUB_OUTPUT"
+
+      - name: Resize root partition
+        run: |
+          printf 'Yes\n' | sudo parted "$IMG_NAME" resizepart 2 "${{ steps.fs_size.outputs.root_end_mb }}MiB" ---pretend-input-tty
+
       - name: Detach loop device
-        run: sudo losetup -d "$LOOPDEV"
+        run: |
+          sudo losetup -d "$LOOPDEV"
+
+      - name: Shrink image to partition size
+        run: |
+          truncate -s "${{ steps.fs_size.outputs.root_end_mb }}M" "$IMG_NAME"
+
+      - name: Reattach minimized image
+        run: |
+          LOOPDEV=$(sudo losetup --show -fP "$IMG_NAME")
+          echo "LOOPDEV=$LOOPDEV" >> "$GITHUB_ENV"
+
+      - name: Mount minimized root filesystem
+        run: |
+          mkdir -p mnt/root
+          sudo mount "${LOOPDEV}p2" mnt/root
+
+      - name: Zero unused filesystem space
+        run: |
+          sudo dd if=/dev/zero of=mnt/root/.zero bs=16M status=progress || true
+          sudo rm -f mnt/root/.zero
+          sync
+
+      - name: Unmount minimized root filesystem
+        run: |
+          sudo umount mnt/root
+
+      - name: Final filesystem check
+        run: |
+          sudo e2fsck -fy "${LOOPDEV}p2"
+
+      - name: Detach final loop device
+        run: |
+          sudo losetup -d "$LOOPDEV"
+
+      - name: Show final image size
+        run: |
+          ls -lh "$IMG_NAME"
+          du -h "$IMG_NAME"
 
       - name: Compress image
-        run: xz -T0 -6 "$IMG_NAME"
+        run: |
+          xz -9e "$IMG_NAME"
+
+      - name: Show compressed image size
+        run: |
+          ls -lh "${IMG_NAME}.xz"
+          du -h "${IMG_NAME}.xz"
 
       - uses: actions/upload-artifact@main
         with:

@@ -21,6 +21,7 @@ sudo -u builder bash -c '
 
   paru -S --noconfirm --needed \
     cmake \
+    ninja \
     boost \
     boost-libs \
     libusb \
@@ -54,6 +55,7 @@ chmod 755 /root
 sudo -u builder bash -c "
   set -e
   cmake -S '$ANDROID_AUTO_SRC/aasdk' -B '$BUILD_DIR/aasdk' \
+    -GNinja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX='$INSTALL_PREFIX'
   cmake --build '$BUILD_DIR/aasdk' -j\$(nproc)
@@ -69,6 +71,7 @@ ldconfig
 sudo -u builder bash -c "
   set -e
   cmake -S '$ANDROID_AUTO_SRC/openauto' -B '$BUILD_DIR/openauto' \
+    -GNinja \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX='$INSTALL_PREFIX' \
     -DAASDK_INCLUDE_DIRS='$INSTALL_PREFIX/include' \
@@ -92,8 +95,8 @@ fi
 rm -rf "$BUILD_DIR" "$ANDROID_AUTO_SRC"
 
 sudo -u builder bash -c '
-  paru -Rns rust cmake base-devel -noconfirm
-  paru -Rns $(paru -Qtdq) --noconfirm || true
+  paru -Rns --noconfirm git rust cmake base-devel ninja
+  paru -Rns --noconfirm $(paru -Qtdq) || true
   paru -Sccd --noconfirm
 '
 
