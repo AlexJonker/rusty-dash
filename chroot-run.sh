@@ -11,13 +11,26 @@ pacman -S --noconfirm --needed git rust base-devel
 useradd -m builder
 echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder
 
-# Install stuff
+# Install everything (official repo + AUR) via paru as the builder user
 sudo -u builder bash -c '
   cd ~
   git clone https://aur.archlinux.org/paru.git
   cd paru
   makepkg -si --noconfirm
   cd ~
+
+  paru -S --noconfirm --needed \
+    cmake \
+    boost \
+    boost-libs \
+    libusb \
+    protobuf \
+    openssl \
+    qt5-base \
+    qt5-multimedia \
+    rtaudio
+
+  paru -S --noconfirm --needed --mflags "--ignorearch" qt5-connectivity
 
   paru -S --noconfirm --needed \
     exfatprogs \
@@ -27,9 +40,59 @@ sudo -u builder bash -c '
     swaybg \
     foot \
     android-udev
+'
 
-  # Clean system
-  paru -Rns $(paru -Qtdq) --noconfirm
+# --- Build aasdk ---
+ANDROID_AUTO_SRC="/root/android-auto"
+BUILD_DIR="/root/build"
+INSTALL_PREFIX="/opt/nowa"
+
+mkdir -p "$BUILD_DIR"
+chown -R builder:builder "$ANDROID_AUTO_SRC" "$BUILD_DIR"
+
+sudo -u builder bash -c "
+  set -e
+  cmake -S '$ANDROID_AUTO_SRC/aasdk' -B '$BUILD_DIR/aasdk' \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX='$INSTALL_PREFIX'
+  cmake --build '$BUILD_DIR/aasdk' -j\$(nproc)
+"
+# install needs root to write to /opt
+cmake --install "$BUILD_DIR/aasdk"
+
+# Refresh linker cache so the openauto build below can find libaasdk/libaasdk_proto
+echo "$INSTALL_PREFIX/lib" > /etc/ld.so.conf.d/nowa.conf
+ldconfig
+
+# --- Build openauto ---
+sudo -u builder bash -c "
+  set -e
+  cmake -S '$ANDROID_AUTO_SRC/openauto' -B '$BUILD_DIR/openauto' \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX='$INSTALL_PREFIX' \
+    -DAASDK_INCLUDE_DIRS='$INSTALL_PREFIX/include' \
+    -DAASDK_PROTO_INCLUDE_DIRS='$INSTALL_PREFIX/include' \
+    -DAASDK_LIBRARIES='$INSTALL_PREFIX/lib/libaasdk.so' \
+    -DAASDK_PROTO_LIBRARIES='$INSTALL_PREFIX/lib/libaasdk_proto.so'
+  cmake --build '$BUILD_DIR/openauto' -j\$(nproc)
+"
+cmake --install "$BUILD_DIR/openauto"
+
+# Sanity check: fail the build now, not on first boot, if the binary can't resolve its libs
+if ! ldd "$INSTALL_PREFIX/bin/autoapp" | grep -q "not found"; then
+  echo "autoapp: all shared libraries resolved"
+else
+  echo "ERROR: autoapp has unresolved shared libraries:"
+  ldd "$INSTALL_PREFIX/bin/autoapp" | grep "not found"
+  exit 1
+fi
+
+# Clean up build tree and source checkout — not needed on the final image
+rm -rf "$BUILD_DIR" "$ANDROID_AUTO_SRC"
+
+sudo -u builder bash -c '
+  paru -Rns rust cmake base-devel -noconfirm
+  paru -Rns $(paru -Qtdq) --noconfirm || true
   paru -Sccd --noconfirm
 '
 
