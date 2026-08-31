@@ -49,6 +49,7 @@ INSTALL_PREFIX="/opt/nowa"
 
 mkdir -p "$BUILD_DIR"
 chown -R builder:builder "$ANDROID_AUTO_SRC" "$BUILD_DIR"
+chmod 755 /root
 
 sudo -u builder bash -c "
   set -e
