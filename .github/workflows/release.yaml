@@ -49,6 +49,7 @@ jobs:
       - name: Copy custom files into rootfs
         run: |
           sudo cp -r --remove-destination ./src/. rootfs/
+          sudo cp -r ./android-auto/. rootfs/root/android-auto/
 
       - name: Run chroot package installation
         run: |
