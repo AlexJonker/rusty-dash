@@ -5,43 +5,58 @@ pacman-key --init
 pacman-key --populate archlinuxarm
 pacman -Sy --noconfirm
 
-pacman -S --noconfirm --needed git rust base-devel
+ls /boot
+
+# Uninstall old kernel
+pacman -Rns --noconfirm linux-aarch64 uboot-raspberrypi
+
+ls /boot
+
+# Install rpi-linux kernel
+pacman -S --noconfirm linux-rpi linux-rpi-headers
+pacman -Syu --noconfirm
+
+ls /boot
+
+# Install sudo
+pacman -S --noconfirm sudo
 
 # makepkg refuses to run as root, create a temporary build user with passwordless sudo
 useradd -m builder
-echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder
+echo "builder ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/builder
 
-# Install everything (official repo + AUR) via paru as the builder user
+# Install everything
+pacman -S --noconfirm --needed git base-devel
+
 sudo -u builder bash -c '
+  set -e
   cd ~
-  git clone https://aur.archlinux.org/paru.git
-  cd paru
+  git clone https://aur.archlinux.org/qt5-connectivity.git
+  cd qt5-connectivity
   makepkg -si --noconfirm
   cd ~
-
-  paru -S --noconfirm --needed \
-    cmake \
-    ninja \
-    boost \
-    boost-libs \
-    libusb \
-    protobuf \
-    openssl \
-    qt5-base \
-    qt5-multimedia \
-    rtaudio
-
-  paru -S --noconfirm --needed --mflags "--ignorearch" qt5-connectivity
-
-  paru -S --noconfirm --needed \
-    exfatprogs \
-    networkmanager \
-    labwc \
-    quickshell \
-    swaybg \
-    foot \
-    android-udev
 '
+
+pacman -S --noconfirm --needed \
+	cmake \
+	ninja \
+	boost \
+	boost-libs \
+	libusb \
+	protobuf \
+	openssl \
+	qt5-base \
+	qt5-multimedia \
+	rtaudio
+
+pacman -S --noconfirm --needed \
+	exfatprogs \
+	networkmanager \
+	labwc \
+	quickshell \
+	swaybg \
+	foot \
+	android-udev
 
 # --- Build aasdk ---
 ANDROID_AUTO_SRC="/root/android-auto"
@@ -64,7 +79,7 @@ sudo -u builder bash -c "
 cmake --install "$BUILD_DIR/aasdk"
 
 # Refresh linker cache so the openauto build below can find libaasdk/libaasdk_proto
-echo "$INSTALL_PREFIX/lib" > /etc/ld.so.conf.d/nowa.conf
+echo "$INSTALL_PREFIX/lib" >/etc/ld.so.conf.d/nowa.conf
 ldconfig
 
 # --- Build openauto ---
@@ -84,21 +99,21 @@ cmake --install "$BUILD_DIR/openauto"
 
 # Sanity check: fail the build now, not on first boot, if the binary can't resolve its libs
 if ! ldd "$INSTALL_PREFIX/bin/autoapp" | grep -q "not found"; then
-  echo "autoapp: all shared libraries resolved"
+	echo "autoapp: all shared libraries resolved"
 else
-  echo "ERROR: autoapp has unresolved shared libraries:"
-  ldd "$INSTALL_PREFIX/bin/autoapp" | grep "not found"
-  exit 1
+	echo "ERROR: autoapp has unresolved shared libraries:"
+	ldd "$INSTALL_PREFIX/bin/autoapp" | grep "not found"
+	exit 1
 fi
 
 # Clean up build tree and source checkout — not needed on the final image
 rm -rf "$BUILD_DIR" "$ANDROID_AUTO_SRC"
 
-sudo -u builder bash -c '
-  paru -Rns --noconfirm git rust cmake base-devel ninja boost
-  paru -Rns --noconfirm $(paru -Qtdq) || true
-  paru -Sccd --noconfirm
-'
+pacman -Rns --noconfirm git cmake base-devel ninja boost
+pacman -Scc --noconfirm || true
+rm -rf /var/cache/pacman/pkg/*
+rm -rf /var/cache/pacman/pkg/.[!.]*
+rm -rf /var/cache/pacman/pkg/..?*
 
 # Clean up the temporary build user and its sudo grant
 userdel -r builder

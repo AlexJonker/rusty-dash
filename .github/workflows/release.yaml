@@ -28,7 +28,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y wget parted dosfstools e2fsprogs zip
 
-      - name: Download ALARM rootfs (Pi 3, aarch64)
+      - name: Download ALARM rootfs (aarch64)
         run: |
           wget -q http://os.archlinuxarm.org/os/ArchLinuxARM-rpi-aarch64-latest.tar.gz
 
@@ -37,47 +37,25 @@ jobs:
           sudo mkdir -p rootfs
           sudo tar -xpf ArchLinuxARM-rpi-aarch64-latest.tar.gz -C rootfs --numeric-owner
           sudo chown root:root rootfs
-
-      - name: Bind-mount pseudo-filesystems for chroot
-        run: |
-          sudo mount --bind rootfs rootfs
-          sudo mount --bind /proc rootfs/proc
-          sudo mount --bind /dev rootfs/dev
-          sudo mount --bind /dev/pts rootfs/dev/pts
-          sudo mount --bind /sys rootfs/sys
+          rm -f ArchLinuxARM-rpi-aarch64-latest.tar.gz
 
       - name: Copy custom files into rootfs
         run: |
           sudo cp -r --remove-destination ./src/. rootfs/
           sudo cp -r ./android-auto/. rootfs/root/android-auto/
 
-      - name: Run chroot package installation
-        run: |
-          sudo cp chroot-run.sh rootfs/root/chroot-run.sh
-          sudo chroot rootfs /root/chroot-run.sh
-          sudo rm -f rootfs/root/chroot-run.sh
-
-      - name: Unmount pseudo-filesystems
-        if: always()
-        run: |
-          sudo umount -R rootfs/dev/pts || true
-          sudo umount -R rootfs/dev || true
-          sudo umount -R rootfs/proc || true
-          sudo umount -R rootfs/sys || true
-          sudo umount rootfs || true
-
       - name: Calculate image size
         id: imgsize
         run: |
           ROOTFS_KB=$(sudo du -sk rootfs | cut -f1)
-          # rootfs size + 512MB boot partition + 512MB headroom, in MB
-          IMG_MB=$(( (ROOTFS_KB / 1024) + 512 + 512 ))
+          # rootfs size + 512MB boot partition + 6144MB headroom
+          IMG_MB=$(( (ROOTFS_KB / 1024) + 512 + 6144 ))
           echo "img_mb=${IMG_MB}" >> "$GITHUB_OUTPUT"
 
       - name: Create image file
         run: |
           IMG_NAME="nowa-${{ inputs.version }}-arm64.img"
-          fallocate -l "${{ steps.imgsize.outputs.img_mb }}M" "$IMG_NAME"
+          truncate -s "${{ steps.imgsize.outputs.img_mb }}M" "$IMG_NAME"
 
           parted -s "$IMG_NAME" mklabel msdos
           parted -s "$IMG_NAME" mkpart primary fat32 1MiB 513MiB
@@ -102,20 +80,52 @@ jobs:
           sudo sed -i "s#^/dev/mmcblk0p1.*#UUID=${BOOT_UUID}  /boot  vfat  defaults  0  0#" rootfs/etc/fstab
           cat rootfs/etc/fstab
 
-      - name: Mount partitions
+      - name: Mount boot partition and seed it with stock boot files
+        run: |
+          # Mount the empty FAT partition to a temp location first
+          mkdir -p boot_seed
+          sudo mount "${LOOPDEV}p1" boot_seed
+          # Copy the tarball's original /boot contents onto the real FAT partition
+          sudo cp -a rootfs/boot/. boot_seed/
+          sudo umount boot_seed
+          # Now mount it into rootfs/boot for the chroot, now correctly pre-populated
+          sudo mount --bind rootfs rootfs
+          sudo mount "${LOOPDEV}p1" rootfs/boot
+
+      - name: Bind-mount pseudo-filesystems for chroot
+        run: |
+          sudo mount --bind /proc rootfs/proc
+          sudo mount --bind /dev rootfs/dev
+          sudo mount --bind /dev/pts rootfs/dev/pts
+          sudo mount --bind /sys rootfs/sys
+
+      - name: Run chroot package installation
+        run: |
+          sudo cp chroot-run.sh rootfs/root/chroot-run.sh
+          sudo chroot rootfs /root/chroot-run.sh
+          sudo rm -f rootfs/root/chroot-run.sh
+
+      - name: Unmount pseudo-filesystems
+        if: always()
+        run: |
+          sudo umount -R rootfs/boot 2>/dev/null || true
+          sudo umount -R rootfs/dev/pts 2>/dev/null || true
+          sudo umount -R rootfs/dev 2>/dev/null || true
+          sudo umount -R rootfs/proc 2>/dev/null || true
+          sudo umount -R rootfs/sys 2>/dev/null || true
+          sudo umount rootfs 2>/dev/null || true
+
+      - name: Copy rootfs into root partition
         run: |
           mkdir -p mnt/root
           sudo mount "${LOOPDEV}p2" mnt/root
           sudo mkdir -p mnt/root/boot
           sudo mount "${LOOPDEV}p1" mnt/root/boot
-
-      - name: Copy rootfs into root partition
-        run: |
           sudo cp -a rootfs/. mnt/root/
 
       - name: Unmount partitions
         run: |
-          sudo umount mnt/root/boot
+          sudo umount mnt/root/boot || true
           sudo umount mnt/root
 
       - name: Detach loop device
@@ -123,11 +133,6 @@ jobs:
 
       - name: Compress image
         run: xz -T0 -9 "$IMG_NAME"
-
-      # - uses: actions/upload-artifact@main
-      #   with:
-      #     name: nowa-image
-      #     path: ${{ env.IMG_NAME }}.xz
 
       - name: Release arm64 image
         uses: softprops/action-gh-release@master
@@ -137,27 +142,3 @@ jobs:
           overwrite_files: true
           files: |
             ${{ env.IMG_NAME }}.xz
-
-
-  # release-image:
-  #   name: Release Image
-  #   needs: [build-pi-image]
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - uses: actions/checkout@main
-  #       with:
-  #         ref: "main"
-
-  #     - uses: actions/download-artifact@main
-  #       with:
-  #         name: nowa-image
-
-  #     - name: Release arm64 image
-  #       uses: softprops/action-gh-release@master
-  #       with:
-  #         tag_name: ${{ format('v{0}', inputs.version) }}
-  #         name: ${{ format('v{0}', inputs.version) }}
-  #         overwrite_files: true
-  #         files: |
-  #           *.img.xz
