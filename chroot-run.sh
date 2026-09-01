@@ -5,7 +5,13 @@ pacman-key --init
 pacman-key --populate archlinuxarm
 pacman -Sy --noconfirm
 
-pacman -S --noconfirm --needed git rust base-devel
+
+# Install rpi-linux kernel
+yes | pacman -S linux-rpi linux-rpi-headers
+pacman -Syu --noconfirm
+
+# Install sudo
+pacman -S --noconfirm sudo
 
 # makepkg refuses to run as root, create a temporary build user with passwordless sudo
 useradd -m builder
@@ -14,6 +20,7 @@ echo "builder ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/builder
 # Install everything (official repo + AUR) via paru as the builder user
 sudo -u builder bash -c '
   cd ~
+  sudo pacman -S --noconfirm --needed git rust base-devel
   git clone https://aur.archlinux.org/paru.git
   cd paru
   makepkg -si --noconfirm
@@ -97,7 +104,7 @@ rm -rf "$BUILD_DIR" "$ANDROID_AUTO_SRC"
 sudo -u builder bash -c '
   paru -Rns --noconfirm git rust cmake base-devel ninja boost
   paru -Rns --noconfirm $(paru -Qtdq) || true
-  paru -Sccd --noconfirm
+  yes | paru -Sccd
 '
 
 # Clean up the temporary build user and its sudo grant
