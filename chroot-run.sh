@@ -58,7 +58,10 @@ pacman -S --noconfirm --needed \
   pipewire \
   pipewire-pulse \
   pipewire-alsa \
-  wireplumber
+  wireplumber \
+  pipewire-jack \
+  gst-libav \
+  gst-plugins-bad
 
 # Enable pipewire
 systemctl --global enable pipewire pipewire-pulse wireplumber
