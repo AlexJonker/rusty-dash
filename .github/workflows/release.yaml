@@ -73,13 +73,6 @@ jobs:
           sudo mkfs.vfat -F32 "${LOOPDEV}p1"
           sudo mkfs.ext4 -F "${LOOPDEV}p2"
 
-      - name: Fix fstab to use boot partition UUID
-        run: |
-          BOOT_UUID=$(sudo blkid -s UUID -o value "${LOOPDEV}p1")
-          echo "Boot partition UUID: $BOOT_UUID"
-          sudo sed -i "s#^/dev/mmcblk0p1.*#UUID=${BOOT_UUID}  /boot  vfat  defaults  0  0#" rootfs/etc/fstab
-          cat rootfs/etc/fstab
-
       - name: Mount boot partition and seed it with stock boot files
         run: |
           # Mount the empty FAT partition to a temp location first
@@ -104,6 +97,14 @@ jobs:
           sudo cp chroot-run.sh rootfs/root/chroot-run.sh
           sudo chroot rootfs /root/chroot-run.sh
           sudo rm -f rootfs/root/chroot-run.sh
+
+      - name: Fix fstab and cmdline.txt to use partition UUID
+        run: |
+          BOOT_UUID=$(sudo blkid -s UUID -o value "${LOOPDEV}p1")
+          ROOT_UUID=$(sudo blkid -s UUID -o value "${LOOPDEV}p2")
+
+          sudo sed -i "s#^/dev/mmcblk0p1.*#UUID=${BOOT_UUID}  /boot  vfat  defaults  0  0#" rootfs/etc/fstab
+          sudo sed -i "s#root=/dev/mmcblk0p2#root=UUID=${ROOT_UUID}#" rootfs/boot/cmdline.txt
 
       - name: Unmount pseudo-filesystems
         if: always()
