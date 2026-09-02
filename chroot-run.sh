@@ -46,9 +46,7 @@ pacman -S --noconfirm --needed \
 	openssl \
 	qt5-base \
 	qt5-multimedia \
-	rtaudio
-
-pacman -S --noconfirm --needed \
+	rtaudio \
 	exfatprogs \
 	networkmanager \
 	labwc \
@@ -56,9 +54,16 @@ pacman -S --noconfirm --needed \
 	swaybg \
 	foot \
 	android-udev \
-	qt5-wayland
+	qt5-wayland \
+  pipewire \
+  pipewire-pulse \
+  pipewire-alsa \
+  wireplumber
 
-# --- Build aasdk ---
+# Enable pipewire
+systemctl --global enable pipewire pipewire-pulse wireplumber
+
+# Build aasdk
 ANDROID_AUTO_SRC="/root/android-auto"
 BUILD_DIR="/root/build"
 INSTALL_PREFIX="/opt/nowa"
@@ -75,14 +80,14 @@ sudo -u builder bash -c "
     -DCMAKE_INSTALL_PREFIX='$INSTALL_PREFIX'
   cmake --build '$BUILD_DIR/aasdk' -j\$(nproc)
 "
-# install needs root to write to /opt
+# Install needs root to write to /opt
 cmake --install "$BUILD_DIR/aasdk"
 
 # Refresh linker cache so the openauto build below can find libaasdk/libaasdk_proto
 echo "$INSTALL_PREFIX/lib" >/etc/ld.so.conf.d/nowa.conf
 ldconfig
 
-# --- Build openauto ---
+# Build openauto
 sudo -u builder bash -c "
   set -e
   cmake -S '$ANDROID_AUTO_SRC/openauto' -B '$BUILD_DIR/openauto' \
