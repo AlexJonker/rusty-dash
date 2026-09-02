@@ -41,7 +41,6 @@ pacman -S --noconfirm --needed \
 	cmake \
 	ninja \
 	boost \
-	boost-libs \
 	libusb \
 	protobuf \
 	openssl \
@@ -56,7 +55,8 @@ pacman -S --noconfirm --needed \
 	quickshell \
 	swaybg \
 	foot \
-	android-udev
+	android-udev \
+	qt5-wayland
 
 # --- Build aasdk ---
 ANDROID_AUTO_SRC="/root/android-auto"
@@ -110,6 +110,8 @@ fi
 rm -rf "$BUILD_DIR" "$ANDROID_AUTO_SRC"
 
 pacman -Rns --noconfirm git cmake base-devel ninja boost
+pacman -S --noconfirm --needed boost-libs # Reinstalling because removing boost also removes boost-libs
+
 pacman -Scc --noconfirm || true
 rm -rf /var/cache/pacman/pkg/*
 rm -rf /var/cache/pacman/pkg/.[!.]*
