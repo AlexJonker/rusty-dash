@@ -61,7 +61,8 @@ pacman -S --noconfirm --needed \
   wireplumber \
   pipewire-jack \
   gst-libav \
-  gst-plugins-bad
+  gst-plugins-bad \
+  gst-plugins-good
 
 # Enable pipewire
 systemctl --global enable pipewire pipewire-pulse wireplumber
