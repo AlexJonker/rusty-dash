@@ -61,8 +61,10 @@ pacman -S --noconfirm --needed \
   wireplumber \
   pipewire-jack \
   gst-libav \
+  gst-plugins-base \
   gst-plugins-bad \
-  gst-plugins-good
+  gst-plugins-good \
+  ffmpeg-rpi
 
 # Enable pipewire
 systemctl --global enable pipewire pipewire-pulse wireplumber
