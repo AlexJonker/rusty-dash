@@ -54,8 +54,7 @@ pacman -S --noconfirm --needed \
   gst-libav \
   gst-plugins-base \
   gst-plugins-bad \
-  gst-plugins-good \
-  ffmpeg-rpi
+  gst-plugins-good
 
 sudo -u builder bash -c '
   set -e
