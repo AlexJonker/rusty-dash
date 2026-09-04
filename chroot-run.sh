@@ -26,18 +26,9 @@ useradd -m builder
 echo "builder ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/builder
 
 # Install everything
-pacman -S --noconfirm --needed git base-devel
-
-sudo -u builder bash -c '
-  set -e
-  cd ~
-  git clone https://aur.archlinux.org/qt5-connectivity.git
-  cd qt5-connectivity
-  makepkg -si --noconfirm
-  cd ~
-'
-
 pacman -S --noconfirm --needed \
+	git \
+	base-devel \
 	cmake \
 	ninja \
 	boost \
@@ -55,16 +46,25 @@ pacman -S --noconfirm --needed \
 	foot \
 	android-udev \
 	qt5-wayland \
-  pipewire \
-  pipewire-pulse \
-  pipewire-alsa \
-  wireplumber \
-  pipewire-jack \
-  gst-libav \
-  gst-plugins-base \
-  gst-plugins-bad \
-  gst-plugins-good \
-  ffmpeg-rpi
+	pipewire \
+	pipewire-pulse \
+	pipewire-alsa \
+	wireplumber \
+	pipewire-jack \
+	gst-libav \
+	gst-plugins-base \
+	gst-plugins-bad \
+	gst-plugins-good \
+	ffmpeg-rpi
+
+sudo -u builder bash -c '
+  set -e
+  cd ~
+  git clone https://aur.archlinux.org/qt5-connectivity.git
+  cd qt5-connectivity
+  makepkg -si --noconfirm
+  cd ~
+'
 
 # Enable pipewire
 systemctl --global enable pipewire pipewire-pulse wireplumber
