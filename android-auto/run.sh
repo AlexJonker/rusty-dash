@@ -18,11 +18,11 @@ cmake --build "$AASDK_BUILD_DIR" -j"$(nproc)"
 # As seen in `ldd output/bin/autoapp | grep aasdk` these flags should be changed when used in building for the rpi image.
 # Should probably end up in something like /opt/nowa
 cmake -S "$OPENAUTO_DIR" -B "$OPENAUTO_BUILD_DIR" \
--DCMAKE_EXE_LINKER_FLAGS="-Wl,--copy-dt-needed-entries" \
--DAASDK_INCLUDE_DIRS="$AASDK_DIR/include" \
--DAASDK_PROTO_INCLUDE_DIRS="$AASDK_BUILD_DIR" \
--DAASDK_LIBRARIES="$AASDK_DIR/lib/libaasdk.so" \
--DAASDK_PROTO_LIBRARIES="$AASDK_DIR/lib/libaasdk_proto.so"
+  -DCMAKE_EXE_LINKER_FLAGS="-Wl,--copy-dt-needed-entries" \
+  -DAASDK_INCLUDE_DIRS="$AASDK_DIR/include" \
+  -DAASDK_PROTO_INCLUDE_DIRS="$AASDK_BUILD_DIR" \
+  -DAASDK_LIBRARIES="$AASDK_DIR/lib/libaasdk.so" \
+  -DAASDK_PROTO_LIBRARIES="$AASDK_DIR/lib/libaasdk_proto.so"
 cmake --build "$OPENAUTO_BUILD_DIR" -j"$(nproc)"
 
 echo "Build complete."

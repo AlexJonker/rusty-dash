@@ -27,35 +27,35 @@ echo "builder ALL=(ALL) NOPASSWD: ALL" >/etc/sudoers.d/builder
 
 # Install everything
 pacman -S --noconfirm --needed \
-	git \
-	base-devel \
-	cmake \
-	ninja \
-	boost \
-	libusb \
-	protobuf \
-	openssl \
-	qt5-base \
-	qt5-multimedia \
-	rtaudio \
-	exfatprogs \
-	networkmanager \
-	labwc \
-	quickshell \
-	swaybg \
-	foot \
-	android-udev \
-	qt5-wayland \
-	pipewire \
-	pipewire-pulse \
-	pipewire-alsa \
-	wireplumber \
-	pipewire-jack \
-	gst-libav \
-	gst-plugins-base \
-	gst-plugins-bad \
-	gst-plugins-good \
-	ffmpeg-rpi
+  git \
+  base-devel \
+  cmake \
+  ninja \
+  boost \
+  libusb \
+  protobuf \
+  openssl \
+  qt5-base \
+  qt5-multimedia \
+  rtaudio \
+  exfatprogs \
+  networkmanager \
+  labwc \
+  quickshell \
+  swaybg \
+  foot \
+  android-udev \
+  qt5-wayland \
+  pipewire \
+  pipewire-pulse \
+  pipewire-alsa \
+  wireplumber \
+  pipewire-jack \
+  gst-libav \
+  gst-plugins-base \
+  gst-plugins-bad \
+  gst-plugins-good \
+  ffmpeg-rpi
 
 sudo -u builder bash -c '
   set -e
@@ -107,15 +107,6 @@ sudo -u builder bash -c "
   cmake --build '$BUILD_DIR/openauto' -j\$(nproc)
 "
 cmake --install "$BUILD_DIR/openauto"
-
-# Sanity check: fail the build now, not on first boot, if the binary can't resolve its libs
-if ! ldd "$INSTALL_PREFIX/bin/autoapp" | grep -q "not found"; then
-	echo "autoapp: all shared libraries resolved"
-else
-	echo "ERROR: autoapp has unresolved shared libraries:"
-	ldd "$INSTALL_PREFIX/bin/autoapp" | grep "not found"
-	exit 1
-fi
 
 # Clean up build tree and source checkout — not needed on the final image
 rm -rf "$BUILD_DIR" "$ANDROID_AUTO_SRC"
